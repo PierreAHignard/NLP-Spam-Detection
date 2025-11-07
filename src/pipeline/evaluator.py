@@ -141,7 +141,7 @@ class Evaluator:
                             scoring='neg_root_mean_squared_error',
                             verbose=logger.level # TODO check if it works (idk)
         )
-        
+
         # Fit GridSearchCV
         if groups is not None:
             n_unique_groups = len(np.unique(groups))

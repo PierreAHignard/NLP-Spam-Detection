@@ -315,7 +315,7 @@ class TestRunner:
                     self.print_step(f"  {line}")
                 if len(status.splitlines()) > 5:
                     self.print_step(f"  ... and {len(status.splitlines()) - 5} more files")
-                
+
                 # Allow tests to run but warn about proof implications
                 self.print_step("Tests will run, but proof will reflect current commit state")
                 return True

@@ -200,8 +200,8 @@ def run_pipeline(args):
                 # Log final model to MLflow
                 
                 # Register model in MLflow Model Registry
-
-
+                
+                
         # Prepare results for summary
         model_name = args.model
         cv_results_dict = {

@@ -1,0 +1,48 @@
+{
+  "execution_metadata": {
+    "timestamp": "2025-11-07T11:51:24.192516",
+    "execution_time_seconds": 18.51,
+    "runner_version": "Enhanced Test Runner v2.0",
+    "environment": {
+      "python_version": "3.13.5 (tags/v3.13.5:6cb20a2, Jun 11 2025, 16:15:46) [MSC v.1943 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.22631-SP0",
+      "working_directory": "C:\\Users\\collo\\OneDrive\\Documents\\! FX\\imt\\DASCI\\air_quality_latest"
+    }
+  },
+  "test_summary": {
+    "total_tests": 4,
+    "passed_tests": 0,
+    "failed_tests": 4,
+    "success_rate": 0.0,
+    "test_modules": [
+      "data_processor",
+      "evaluator",
+      "feature_engineer",
+      "model_trainer"
+    ]
+  },
+  "detailed_results": {
+    "data_processor": false,
+    "evaluator": false,
+    "feature_engineer": false,
+    "model_trainer": false
+  },
+  "module_breakdown": {
+    "data_processor": {
+      "passed": false,
+      "status": "FAIL"
+    },
+    "evaluator": {
+      "passed": false,
+      "status": "FAIL"
+    },
+    "feature_engineer": {
+      "passed": false,
+      "status": "FAIL"
+    },
+    "model_trainer": {
+      "passed": false,
+      "status": "FAIL"
+    }
+  }
+}
