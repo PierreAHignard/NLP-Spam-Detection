@@ -1,7 +1,32 @@
+[build-system]
+requires = ["setuptools~=80.9.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "ds-toolkit-project-2"
-version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.13"
-dependencies = []
+name = "air_quality"
+version = "1.0.3"
+description = "Machine Learning Pipeline for Air Quality Prediction"
+requires-python = ">=3.11"
+
+dependencies = [
+    "pandas~=2.3.1",
+    "numpy~=2.3.1",
+    "scikit-learn~=1.7.0",
+    "matplotlib~=3.10.3",
+    "seaborn~=0.13.2",
+    "joblib~=1.5.1",
+    "cryptography>=41.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel~=6.29.5",
+    "jupyter~=1.1.1",
+    "pytest~=8.4.1",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.uv]
+default-groups = []

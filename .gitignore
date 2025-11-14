@@ -1,10 +1,29 @@
-# Python-generated files
+# Python cache
 __pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
+*.pyc
+*.pyo
 
-# Virtual environments
-.venv
+# uv virtual environment
+.venv/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Data files (exclude for students)
+data/
+
+# Model files
+*.pkl
+*.pickle
+*.joblib
+
+# Python package metadata
+*.egg-info/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
