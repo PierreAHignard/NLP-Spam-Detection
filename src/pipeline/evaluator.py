@@ -139,12 +139,13 @@ class Evaluator:
                             param_grid,
                             n_jobs=-1,
                             scoring='neg_root_mean_squared_error',
-                            verbose=get_logger().level # TODO check if it works (idk)
+                            verbose=logger.level # TODO check if it works (idk)
         )
         
         # Fit GridSearchCV
         if groups is not None:
-            cv = GroupKFold(n_splits=len(groups))
+            n_unique_groups = len(np.unique(groups))
+            cv = GroupKFold(n_splits=min(N_SPLITS, n_unique_groups))
             gscv.fit(X, y, groups=groups, cv=cv)
         else:
             gscv.fit(X, y)

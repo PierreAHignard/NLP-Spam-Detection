@@ -126,11 +126,12 @@ def run_pipeline(args):
 
         X = train_data[selected_features]
         y = train_data[TARGET_COL]
+        groups = train_data["city"]
 
         if not args.optimize:
             with logger.timer("Cross-validation"):
                 # Standard cross-validation using Evaluator
-                cv_results = evaluator.cross_validate_model(model, X, y)
+                cv_results = evaluator.cross_validate_model(model, X, y, groups)
 
         # Add hyperparameter optimization logic (Workshop 3)
         else:
@@ -146,13 +147,13 @@ def run_pipeline(args):
 
                 with logger.timer("Cross-validation"):
                     # Standard cross-validation using Evaluator
-                    cv_results = evaluator.cross_validate_model(model, X, y)
+                    cv_results = evaluator.cross_validate_model(model, X, y, groups)
 
             # If grid is defined, perform optimization
             if param_grid is not None:
                 with logger.timer("Cross-validation"):
                     # Perform hyperparameter optimization
-                    cv_results = evaluator.hyperparameter_optimization_cv(model, param_grid, X, y)
+                    cv_results = evaluator.hyperparameter_optimization_cv(model, param_grid, X, y, groups)
 
                     # TODO Add MLflow hyperparameter optimization logging (Workshop 4)
 
@@ -199,9 +200,7 @@ def run_pipeline(args):
                 # Log final model to MLflow
                 
                 # Register model in MLflow Model Registry
-                
-                
-                
+
 
         # Prepare results for summary
         model_name = args.model
