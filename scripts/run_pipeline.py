@@ -10,9 +10,15 @@ import argparse
 import sys
 import time
 from pathlib import Path
+from xmlrpc.client import Error
+
 import numpy as np
 import pandas as pd
 import os
+
+from scipy.special import parameters
+
+from utils import TARGET_COL
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
@@ -24,7 +30,9 @@ from utils.config import MODEL_TYPES
 from utils.logger import get_logger, set_log_level, log_level_from_string, LogLevel
 from utils.utils import format_time_elapsed
 
-# TODO Import parameter grids for optimization (Workshop 3)
+# Import parameter grids for optimization (Workshop 3)
+
+from utils.config import DEFAULT_PARAM_GRIDS
 
 # TODO Import MLflow (Workshop 4)
 
@@ -108,21 +116,45 @@ def run_pipeline(args):
         # Initialize evaluator
         evaluator = Evaluator()
 
-        # TODO Create model for cross-validation
+        # Create model for cross-validation
+        if args.model in MODEL_TYPES:
+            model = trainer.create_model(args.model)
+        else:
+            raise Exception(f"The input model '{args.model}' is not recognised")
 
-        # TODO Prepare data X, y, and groups for cross-validation
+        # Prepare data X, y, and groups for cross-validation
+
+        X = train_data[selected_features]
+        y = train_data[TARGET_COL]
 
         if not args.optimize:
             with logger.timer("Cross-validation"):
-                # TODO Standard cross-validation using Evaluator
-        # TODO Add hyperparameter optimization logic (Workshop 3)
+                # Standard cross-validation using Evaluator
+                cv_results = evaluator.cross_validate_model(model, X, y)
 
+        # Add hyperparameter optimization logic (Workshop 3)
+        else:
             # Get parameter grid for the model
-            # If no grid is defined, use default parameters
-            # If grid is defined, perform optimization        
-                # Perform hyperparameter optimization
+            if args.model in DEFAULT_PARAM_GRIDS:
+                param_grid = DEFAULT_PARAM_GRIDS[args.model]
 
-                    # Add MLflow hyperparameter optimization logging (Workshop 4)
+            # If no grid is defined, use default parameters
+            else:
+                param_grid = None
+
+                logger.warning(f"No parameter grid for selected model '{args.model}'")
+
+                with logger.timer("Cross-validation"):
+                    # Standard cross-validation using Evaluator
+                    cv_results = evaluator.cross_validate_model(model, X, y)
+
+            # If grid is defined, perform optimization
+            if param_grid is not None:
+                with logger.timer("Cross-validation"):
+                    # Perform hyperparameter optimization
+                    cv_results = evaluator.hyperparameter_optimization_cv(model, param_grid, X, y)
+
+                    # TODO Add MLflow hyperparameter optimization logging (Workshop 4)
 
                     # Use optimized model for final evaluation
 
@@ -215,8 +247,10 @@ def run_pipeline(args):
             'selected_features': selected_features,
             'execution_time': execution_time
         }
-    # TODO End MLflow run (Workshop 4)
 
+    finally:
+        # TODO End MLflow run (Workshop 4)
+        pass
 
 def parse_arguments():
     """Parse command line arguments."""
