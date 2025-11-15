@@ -10,7 +10,9 @@ import numpy as np
 from sklearn.model_selection import GroupKFold
 from sklearn.metrics import root_mean_squared_error, mean_absolute_error, r2_score
 
-# TODO Import GridSearchCV for hyperparameter optimization (Workshop 3)
+# Import GridSearchCV for hyperparameter optimization (Workshop 3)
+
+from sklearn.model_selection import GridSearchCV
 
 # TODO Import MLflow (Workshop 4)
 
@@ -130,15 +132,29 @@ class Evaluator:
         logger = get_logger()
         logger.info(f"Optimizing hyperparameters for {model.__class__.__name__}...", LogLevel.NORMAL)
         
-        # TODO Add hyperparameter optimization with geographic cross-validation (Workshop 3)
-        # Set up cross-validation strategy
-        
+        # Add hyperparameter optimization with geographic cross-validation (Workshop 3)
         # Configure GridSearchCV with geographic cross-validation
+
+        gscv = GridSearchCV(model,
+                            param_grid,
+                            n_jobs=-1,
+                            scoring='neg_root_mean_squared_error',
+                            verbose=get_logger().level # TODO check if it works (idk)
+        )
         
         # Fit GridSearchCV
-        
+        if groups is not None:
+            cv = GroupKFold(n_splits=len(groups))
+            gscv.fit(X, y, groups=groups, cv=cv)
+        else:
+            gscv.fit(X, y)
+
         # Extract results (GridSearchCV returns negative RMSE, convert to positive)
-        
+
+        best_model = gscv.best_estimator_
+        best_params = gscv.best_params_
+        best_score = -gscv.best_score_ #Since output is negative
+
         # Logging
         logger.success(f"Best RMSE: {best_score:.3f}")
         if logger.level >= LogLevel.NORMAL:
