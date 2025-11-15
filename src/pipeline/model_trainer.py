@@ -10,7 +10,11 @@ import numpy as np
 import joblib
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 
-# TODO Import additional models (Workshop 3)
+# Import additional models (Workshop 3)
+
+import xgboost as xgboost
+import lightgbm
+
 
 # TODO Import MLflow (Workshop 4)
 
@@ -52,7 +56,14 @@ class ModelTrainer:
         # Create model instance based on model_type
         if model_type == 'linear':
             model = LinearRegression(**params)
-        # TODO Add XGBoost and LightGBM model creation (Workshop 3)
+
+        # Add XGBoost and LightGBM model creation (Workshop 3)
+        elif model_type == "xgboost":
+            model = xgboost.XGBRegressor(objective='reg:squarederror', random_state=RANDOM_STATE, **params)
+
+        elif model_type == "lightgbm":
+            model = lightgbm.LGBMModel(objective='regression', verbose=-1, **params)
+
         else:
             raise ValueError(f"Unknown model type: {model_type}. Available: {MODEL_TYPES}")
         

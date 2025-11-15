@@ -57,10 +57,10 @@ N_FEATURES_RFE = 15
 # MODEL CONFIGURATION
 # =============================================================================
 
-# Available model types
-MODEL_TYPES = ["linear"]
+## Available model types
+#MODEL_TYPES = ["linear"]
 
-# TODO Add XGBoost and LightGBM support (Workshop 3)
+# Add XGBoost and LightGBM support (Workshop 3)
 # Available model types
 MODEL_TYPES = ["linear", "xgboost", "lightgbm"]
 
