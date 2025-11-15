@@ -40,7 +40,8 @@ class DataProcessor:
         logger.substep("Loading Data")
         
         # TODO Load training and test data using DATA_PATH and file names defined in config
-        
+        self.train_data = pd.read_csv(DATA_PATH / TRAIN_FILE)
+        self.test_data = pd.read_csv(DATA_PATH / TEST_FILE)
         
         # Logging
         with logger.indent():
@@ -69,8 +70,13 @@ class DataProcessor:
         logger.info("Forward-Backward Fill")
         
         # TODO Sort by group and date to ensure proper temporal order
+        df = df.sort_values(by=[group_col, date_col]).reset_index(drop=True)
 
         # TODO Apply forward fill then backward fill for each col within each group
+
+        for col in cols:
+            df[col] = df.groupby(group_col)[col].ffill()
+            df[col] = df.groupby(group_col)[col].bfill()
 
         return df
     
@@ -92,19 +98,27 @@ class DataProcessor:
         logger.substep("Handling Missing Values")
         
         # TODO Check initial missing values
-        
+        initial_missing_train = (train_df.isna().sum())
+        initial_missing_test = (test_df.isna().sum())
+
         # Logging
         with logger.indent():
             logger.info(f"Initial missing values - Train: {initial_missing_train}, Test: {initial_missing_test}")
         
         # TODO Make copies to avoid modifying originals
-        
+        train = train_df.copy()
+        test = test_df.copy()
+
+
         # TODO Process both datasets city by city
             # Process training data for this city
-
+        train = self.forward_back_fill(train, train.columns, "city", "date")
             # Process test data for this city
+        test = self.forward_back_fill(test, test.columns, "city", "date")
         
         # TODO Check remaining missing values
+        final_missing_train = train.isnull().sum().sum()
+        final_missing_test = test.isnull().sum().sum()
         
         # Logging
         with logger.indent():
@@ -133,8 +147,20 @@ class DataProcessor:
         """
         logger = get_logger()
         logger.substep("Dropping High Missing Columns")
+        threshold = 0.7
         
         # TODO Find columns to drop based on training data
+
+        train_missing_data = train_df.isnull().sum()
+        test_missing_data = test_df.isnull().sum()
+
+        train_missing_percent = (train_missing_data/train_df.shape[0]) * 100
+        test_missing_percent = (test_missing_data/test_df.shape[0]) * 100
+
+        train_drop_cols = train_missing_percent[train_missing_percent > 70].index.tolist()
+        test_drop_cols = test_missing_percent[test_missing_percent > 70].index.tolist()
+
+        drop_cols = set(train_drop_cols + test_drop_cols)
 
         if len(drop_cols) > 0:
             # Logging
@@ -145,13 +171,15 @@ class DataProcessor:
                     logger.info(f"  - {col}: {missing_pct:.1f}% missing")
 
             # TODO Drop from both datasets
+            train = train_df.drop(drop_cols, axis=1)
+            test = test_df.drop(drop_cols, axis=1)
             
         else:
             # TODO Copy original data if no columns to drop in order to maintain consistency with drop logic
-
+            train = train_df.copy()
+            test = test_df.copy()
             # Logging
             logger.success("No columns exceed missing data threshold")
-
 
         with logger.indent():
             logger.data_info(f"Remaining columns in train: {train.shape[1]}")
@@ -179,11 +207,16 @@ class DataProcessor:
             raise ValueError(f"City column '{CITY_COL}' not found in data")
         
         # TODO Copy the DataFrame to avoid modifying the original
-        
+        df_with_folds = df.copy()
         # TODO Create city-based folds using GroupKFold and N_SPLITS configured in utils/config.py
+        gkf = GroupKFold(N_SPLITS)
+        X = df_with_folds.drop(columns=["pm2_5", "city"])
+        y = df_with_folds["pm2_5"]
+        groups = df_with_folds["city"]
+
 
         # The 'groups' parameter tells GroupKFold which samples belong to the same group defined in CITY_COL
-        for fold, (train_idx, val_idx) in enumerate(gkf.split(df_with_folds, groups=df_with_folds[CITY_COL]), 1):
+        for fold, (train_idx, val_idx) in enumerate(gkf.split(X, y, groups=groups), 1):
             df_with_folds.loc[val_idx, 'folds'] = fold
 
         # Convert to integer type for easier handling
@@ -222,7 +255,7 @@ class DataProcessor:
         # Work with copies
         train_processed = self.train_data.copy()
         test_processed = self.test_data.copy()
-        
+
         # Step 1: Drop high missing columns
         if drop_high_missing:
             train_processed, test_processed = self.drop_high_missing_columns(train_processed, test_processed)
@@ -234,7 +267,7 @@ class DataProcessor:
         # Step 3: Create folds (training data only)
         if create_folds:
             train_processed = self.create_geographic_folds(train_processed)
-        
+
         # Logging
         logger.success("Preprocessing pipeline completed")
         

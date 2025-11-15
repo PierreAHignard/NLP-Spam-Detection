@@ -44,14 +44,18 @@ class Evaluator:
             Dictionary with calculated metrics
         """
         # TODO Calculate comprehensive regression metrics
-        
+        rmse = root_mean_squared_error(y_true, y_pred)
+        mae = mean_absolute_error(y_true, y_pred)
+        r2 = r2_score(y_true, y_pred)
         # Create metrics dictionary
         metrics = {
             'rmse': rmse,
             'mae': mae,
             'r2': r2
         }
-        
+        print(" Y_TRUE : ", y_true)
+        print(" Y_PRED : ", y_pred)
+        print(metrics)
         return metrics
     
     def cross_validate_model(self, model, X, y, groups=None):

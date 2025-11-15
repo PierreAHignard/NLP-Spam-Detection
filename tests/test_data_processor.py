@@ -249,6 +249,12 @@ class TestDataProcessor:
         
         # Check ID integrity (assuming 'id' column exists)
         if 'id' in train_processed.columns and 'id' in original_train.columns:
+            print("train_processed_id : ", len(train_processed['id'][:300]))
+            print("original_processed_id : ", len(original_train['id']))
+            for i in original_train['id']:
+                #print(" nNNNNNN ")
+                if i in train_processed['id']:
+                    print(" IIIII : ", i)
             assert set(train_processed['id']) == set(original_train['id']), "Training IDs should be preserved"
         
         # Check that date and city columns are preserved

@@ -88,11 +88,14 @@ class ModelTrainer:
         # TODO Add MLflow parameter logging (Workshop 4)
         
         # TODO Train the model
-        
+        model = self.create_model(model_type, **model_params)
+        model = model.fit(X, y)
         # TODO Store trained model
-        
+        self.trained_models[model_type] = model
+        y_pred = model.predict(X)
         # TODO Calculate training score
-
+        metrics = self.evaluator.calculate_metrics(y, y_pred)
+        train_score = metrics["r2"]
         # Logging
         with logger.indent():
             logger.model_info(f"Training R² score: {train_score:.4f}")
@@ -116,7 +119,7 @@ class ModelTrainer:
         logger = get_logger()
         
         # TODO Make predictions using model
-        
+        predictions = model.predict(X)
         # Logging
         logger.success(f"Generated {len(predictions)} predictions")
         
