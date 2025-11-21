@@ -69,10 +69,10 @@ class DataProcessor:
         logger = get_logger()
         logger.info("Forward-Backward Fill")
         
-        # TODO Sort by group and date to ensure proper temporal order
+        # Sort by group and date to ensure proper temporal order
         df = df.sort_values(by=[group_col, date_col]).reset_index(drop=True)
 
-        # TODO Apply forward fill then backward fill for each col within each group
+        # Apply forward fill then backward fill for each col within each group
 
         for col in cols:
             df[col] = df.groupby(group_col)[col].ffill()
@@ -97,7 +97,7 @@ class DataProcessor:
         logger = get_logger()
         logger.substep("Handling Missing Values")
         
-        # TODO Check initial missing values
+        # Check initial missing values
         initial_missing_train = (train_df.isna().sum())
         initial_missing_test = (test_df.isna().sum())
 
@@ -105,18 +105,18 @@ class DataProcessor:
         with logger.indent():
             logger.info(f"Initial missing values - Train: {initial_missing_train}, Test: {initial_missing_test}")
         
-        # TODO Make copies to avoid modifying originals
+        # Make copies to avoid modifying originals
         train = train_df.copy()
         test = test_df.copy()
 
 
-        # TODO Process both datasets city by city
+        # Process both datasets city by city
             # Process training data for this city
         train = self.forward_back_fill(train, train.columns, "city", "date")
             # Process test data for this city
         test = self.forward_back_fill(test, test.columns, "city", "date")
         
-        # TODO Check remaining missing values
+        # Check remaining missing values
         final_missing_train = train.isnull().sum().sum()
         final_missing_test = test.isnull().sum().sum()
         
@@ -149,7 +149,7 @@ class DataProcessor:
         logger.substep("Dropping High Missing Columns")
         threshold = 0.7
         
-        # TODO Find columns to drop based on training data
+        # Find columns to drop based on training data
 
         train_missing_data = train_df.isnull().sum()
         test_missing_data = test_df.isnull().sum()
@@ -170,12 +170,12 @@ class DataProcessor:
                     missing_pct = (train_df[col].isnull().sum() / len(train_df)) * 100
                     logger.info(f"  - {col}: {missing_pct:.1f}% missing")
 
-            # TODO Drop from both datasets
+            # Drop from both datasets
             train = train_df.drop(drop_cols, axis=1)
             test = test_df.drop(drop_cols, axis=1)
             
         else:
-            # TODO Copy original data if no columns to drop in order to maintain consistency with drop logic
+            # Copy original data if no columns to drop in order to maintain consistency with drop logic
             train = train_df.copy()
             test = test_df.copy()
             # Logging
@@ -206,9 +206,9 @@ class DataProcessor:
         if CITY_COL not in df.columns:
             raise ValueError(f"City column '{CITY_COL}' not found in data")
         
-        # TODO Copy the DataFrame to avoid modifying the original
+        # Copy the DataFrame to avoid modifying the original
         df_with_folds = df.copy()
-        # TODO Create city-based folds using GroupKFold and N_SPLITS configured in utils/config.py
+        # Create city-based folds using GroupKFold and N_SPLITS configured in utils/config.py
         gkf = GroupKFold(N_SPLITS)
         X = df_with_folds.drop(columns=["pm2_5", "city"])
         y = df_with_folds["pm2_5"]

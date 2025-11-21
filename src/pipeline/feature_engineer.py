@@ -2,19 +2,15 @@
 Feature engineering module for Air Quality ML Pipeline.
 
 This module handles feature extraction and selection.
-Students need to complete the TODO sections.
+Students need to complete the sections.
 """
 
 import pandas as pd
-import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from sklearn.feature_selection import SelectKBest, f_regression, RFE
 from sklearn.linear_model import LinearRegression
 
-from utils.config import (
-    TEMPORAL_FEATURES, N_FEATURES_SELECTKBEST, N_FEATURES_RFE,
-    DATE_COL, LATITUDE_COL, LONGITUDE_COL, TARGET_COL
-)
+from utils.config import TARGET_COL
 from utils.logger import get_logger, LogLevel
 
 # Import MLflow (Workshop 4)

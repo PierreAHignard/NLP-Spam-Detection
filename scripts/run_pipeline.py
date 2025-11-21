@@ -10,13 +10,6 @@ import argparse
 import sys
 import time
 from pathlib import Path
-from xmlrpc.client import Error
-
-import numpy as np
-import pandas as pd
-import os
-
-from scipy.special import parameters
 
 from utils.config import TARGET_COL, DATA_PATH, MLFLOW_EXPERIMENT_NAME, MLFLOW_TRACKING_URI
 
