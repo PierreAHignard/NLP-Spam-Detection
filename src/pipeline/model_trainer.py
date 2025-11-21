@@ -16,7 +16,8 @@ import xgboost as xgboost
 import lightgbm
 
 
-# TODO Import MLflow (Workshop 4)
+# Import MLflow (Workshop 4)
+import mlflow
 
 from utils.config import MODEL_TYPES, RANDOM_STATE, TARGET_COL, CITY_COL
 from .evaluator import Evaluator
@@ -85,15 +86,23 @@ class ModelTrainer:
         logger = get_logger()
         logger.substep(f"Training {model_type.title()} Model")
 
-        # TODO Add MLflow parameter logging (Workshop 4)
+        # Add MLflow parameter logging (Workshop 4)
+
+        if mlflow.active_run():
+            mlflow.log_params({
+                'model_type': model_type,
+                'n_features': len(X),
+                'n_samples': len(y),
+                **model_params  # Unpacks additional parameters
+            })
         
-        # TODO Train the model
+        # Train the model
         model = self.create_model(model_type, **model_params)
         model = model.fit(X, y)
-        # TODO Store trained model
+        # Store trained model
         self.trained_models[model_type] = model
         y_pred = model.predict(X)
-        # TODO Calculate training score
+        # Calculate training score
         metrics = self.evaluator.calculate_metrics(y, y_pred)
         train_score = metrics["r2"]
         # Logging
@@ -118,7 +127,7 @@ class ModelTrainer:
         """
         logger = get_logger()
         
-        # TODO Make predictions using model
+        # Make predictions using model
         predictions = model.predict(X)
         # Logging
         logger.success(f"Generated {len(predictions)} predictions")

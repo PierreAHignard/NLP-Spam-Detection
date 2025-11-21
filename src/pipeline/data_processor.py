@@ -39,7 +39,7 @@ class DataProcessor:
         logger = get_logger()
         logger.substep("Loading Data")
         
-        # TODO Load training and test data using DATA_PATH and file names defined in config
+        # Load training and test data using DATA_PATH and file names defined in config
         self.train_data = pd.read_csv(DATA_PATH / TRAIN_FILE)
         self.test_data = pd.read_csv(DATA_PATH / TEST_FILE)
         

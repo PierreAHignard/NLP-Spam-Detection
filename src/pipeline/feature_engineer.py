@@ -17,7 +17,9 @@ from utils.config import (
 )
 from utils.logger import get_logger, LogLevel
 
-# TODO Import MLflow (Workshop 4)
+# Import MLflow (Workshop 4)
+
+import mlflow
 
 class FeatureEngineer:
     """
@@ -53,13 +55,13 @@ class FeatureEngineer:
         
         date_col = "date"
 
-        # TODO Copy the DataFrame into df_features to avoid modifying the original
+        # Copy the DataFrame into df_features to avoid modifying the original
         df_features = df.copy()
 
-        # TODO Ensure the date column is datetime type for proper extraction
+        # Ensure the date column is datetime type for proper extraction
         df_features[date_col] = pd.to_datetime(df_features["date"])
 
-        # TODO Extract basic temporal components that affect air quality
+        # Extract basic temporal components that affect air quality
         df_features["year"] = df[date_col].dt.year
         df_features["month"] = df[date_col].dt.month
         df_features["day"] = df[date_col].dt.day
@@ -89,10 +91,10 @@ class FeatureEngineer:
         logger = get_logger()
         logger.substep("Extracting Geographic Features")
         
-        # TODO Copy the DataFrame into df_features to avoid modifying the original
+        # Copy the DataFrame into df_features to avoid modifying the original
         df_features = df.copy()
 
-        # TODO Create a unique location identifier by combining coordinates
+        # Create a unique location identifier by combining coordinates
         # This allows the model to learn location-specific patterns
         
         df_features['location'] = (
@@ -125,21 +127,21 @@ class FeatureEngineer:
         logger = get_logger()
         logger.substep("Encoding Categorical Features")
         
-        # TODO Combine datasets to ensure consistent encoding across train/test
+        # Combine datasets to ensure consistent encoding across train/test
         # This prevents issues where test set has categories not seen in training
         train_df['_source'] = 'train'
         test_df['_source'] = 'test'
         df = pd.concat([train_df, test_df])
-        # TODO Initialize label encoder for consistent categorical-to-numerical conversion
+        # Initialize label encoder for consistent categorical-to-numerical conversion
         le = LabelEncoder()
-        # TODO Identify categorical columns that need encoding
+        # Identify categorical columns that need encoding
         # These are high-cardinality categories (many unique values)
         to_encode = [ col for col in df.columns if df[col].nunique() > 2]
         print(" To Encode : ", to_encode)
-        # TODO Apply label encoding: convert each unique category to a unique integer
+        # Apply label encoding: convert each unique category to a unique integer
         for col in to_encode:
             df[col] = le.fit_transform(df[col])
-        # TODO Split back into separate train and test datasets
+        # Split back into separate train and test datasets
         train_encoded = df[df["_source"] == 'train']
         test_encoded = df[df["_source"] == 'test']
         # Logging
@@ -162,13 +164,13 @@ class FeatureEngineer:
         logger = get_logger()
         logger.substep("Feature Selection - SelectKBest")
         
-        # TODO Initialize and fit the selector
+        # Initialize and fit the selector
         selector_kbest = SelectKBest(f_regression, k=k)
         selected_df = selector_kbest.fit_transform(X, y)
-        # TODO Get selected feature names and their scores
+        # Get selected feature names and their scores
         selected_features_kbest = selector_kbest.get_feature_names_out()
         scores = selector_kbest.scores_
-        # TODO Create a summary DataFrame for selected features only
+        # Create a summary DataFrame for selected features only
         summ = pd.DataFrame(selected_df, columns=selected_features_kbest)
         summ.describe()
 
@@ -198,11 +200,11 @@ class FeatureEngineer:
         logger = get_logger()
         logger.substep("Feature Selection - RFE")
         
-        # TODO Initialize RFE with LinearRegression as the estimator
+        # Initialize RFE with LinearRegression as the estimator
         selector_rfe = RFE(LinearRegression(), n_features_to_select=rfe_features)
-        # TODO Fit RFE and transform features
+        # Fit RFE and transform features
         selector_rfe.fit_transform(X, y)
-        # TODO Get selected features and their rankings
+        # Get selected features and their rankings
         selected_features_rfe = selector_rfe.get_feature_names_out()
         # Logging
         logger.info(f"Top {rfe_features} features selected by RFE:", LogLevel.NORMAL)
@@ -306,8 +308,15 @@ class FeatureEngineer:
         X = train_df[feature_cols]
         y = train_df[TARGET_COL]
 
-        # TODO Add MLflow feature selection logging (Workshop 4)       
+        # Add MLflow feature selection logging (Workshop 4)
+        if mlflow.active_run():
             # Log feature selection parameters
+            mlflow.log_params({
+                'method': method,
+                'n_features': n_features,
+                'feature_cols': feature_cols,
+                'target_col': TARGET_COL,
+            })
         
         if method == 'selectkbest':
             return self.select_features_selectkbest(X, y, n_features)

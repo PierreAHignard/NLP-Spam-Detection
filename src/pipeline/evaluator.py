@@ -14,7 +14,9 @@ from sklearn.metrics import root_mean_squared_error, mean_absolute_error, r2_sco
 
 from sklearn.model_selection import GridSearchCV
 
-# TODO Import MLflow (Workshop 4)
+# Import MLflow (Workshop 4)
+
+import mlflow
 
 from utils.config import N_SPLITS, RANDOM_STATE
 from utils.logger import get_logger, LogLevel
@@ -43,10 +45,11 @@ class Evaluator:
         Returns:
             Dictionary with calculated metrics
         """
-        # TODO Calculate comprehensive regression metrics
+        # Calculate comprehensive regression metrics
         rmse = root_mean_squared_error(y_true, y_pred)
         mae = mean_absolute_error(y_true, y_pred)
         r2 = r2_score(y_true, y_pred)
+
         # Create metrics dictionary
         metrics = {
             'rmse': rmse,
@@ -101,13 +104,17 @@ class Evaluator:
             cv_results[f'{metric}_mean'] = np.mean(values)
             cv_results[f'{metric}_std'] = np.std(values)
         
-        # TODO Add MLflow cross-validation metrics logging (Workshop 4)       
+        # TODO Add MLflow cross-validation metrics logging (Workshop 4)
+        if mlflow.active_run():
             # Log cross-validation results (metrics only - must be numeric)
-            
+
             # Add additional CV metadata (metrics only - must be numeric)
-            
-            
+
             # Log strategy as parameter (strings allowed in parameters)
+            mlflow.log_params({
+                'key1': value1,
+                'key2': value2,
+            })
 
         # Logging
         if logger.level >= LogLevel.NORMAL:
