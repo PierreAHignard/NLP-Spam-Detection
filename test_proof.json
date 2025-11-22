@@ -1,10 +1,10 @@
 {
-  "message": "{\"git_context\":{\"author_email\":\"samuel.vaton@imt-atlantique.net\",\"author_name\":\"Samuel\",\"commit_hash\":\"52d78ef90a12d30333edae1f54bb32012ff2310e\"},\"test_summary\":{\"execution_time\":3.68,\"passed_tests\":0,\"success_rate\":0.0,\"total_tests\":1},\"timestamp\":\"2025-11-22T17:04:05.977484\",\"version\":\"1.0\"}",
-  "message_hash": "/nDkfaP5J+mbeqO+uMP/QoUz2F6S59WH5UO272RWqVQ=",
+  "message": "{\"git_context\":{\"author_email\":\"samuel.vaton@imt-atlantique.net\",\"author_name\":\"Samuel\",\"commit_hash\":\"b00f84faedbf95263c0a9e8f6d065e2051f50445\"},\"test_summary\":{\"execution_time\":4.22,\"passed_tests\":1,\"success_rate\":100.0,\"total_tests\":1},\"timestamp\":\"2025-11-22T17:16:25.100671\",\"version\":\"1.0\"}",
+  "message_hash": "2d3RTuybKo+8/xXkPeOsRqiTJlMnzIgiES3B3RHmXSA=",
   "test_results": {
     "execution_metadata": {
-      "timestamp": "2025-11-22T17:04:05.961606",
-      "execution_time_seconds": 3.68,
+      "timestamp": "2025-11-22T17:16:25.093541",
+      "execution_time_seconds": 4.22,
       "runner_version": "Enhanced Test Runner v2.0",
       "environment": {
         "python_version": "3.13.9 (main, Oct 28 2025, 12:03:59) [MSC v.1944 64 bit (AMD64)]",
@@ -14,28 +14,28 @@
     },
     "test_summary": {
       "total_tests": 1,
-      "passed_tests": 0,
-      "failed_tests": 1,
-      "success_rate": 0.0,
+      "passed_tests": 1,
+      "failed_tests": 0,
+      "success_rate": 100.0,
       "test_modules": [
         "evaluator"
       ]
     },
     "detailed_results": {
-      "evaluator": false
+      "evaluator": true
     },
     "module_breakdown": {
       "evaluator": {
-        "passed": false,
-        "status": "FAIL"
+        "passed": true,
+        "status": "PASS"
       }
     }
   },
   "git_info": {
-    "commit_hash": "52d78ef90a12d30333edae1f54bb32012ff2310e",
+    "commit_hash": "b00f84faedbf95263c0a9e8f6d065e2051f50445",
     "author_name": "Samuel",
     "author_email": "samuel.vaton@imt-atlantique.net"
   },
-  "timestamp": "2025-11-22T17:04:05.977484",
+  "timestamp": "2025-11-22T17:16:25.100671",
   "signature_placeholder": "INSTRUCTOR_SIGNATURE_REQUIRED"
 }

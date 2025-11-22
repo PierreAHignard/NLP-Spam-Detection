@@ -47,6 +47,16 @@ uv run python scripts/run_pipeline.py --model linear --method rfe --n-features 1
 
 [Add your advanced models usage here]
 
+first test of the pipeline 
+🎯 [17:21:04] RESULTS SUMMARY
+├── Model: linear
+├── RMSE: 2147.020
+├── R²: 0.137
+├── Features: 15
+├── Selection Method: selectkbest
+├── Optimized: False
+├── Execution Time: 9.3 seconds
+
 ### MLflow Experiment Tracking
 
 [Add your MLflow usage here]

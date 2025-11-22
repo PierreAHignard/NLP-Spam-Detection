@@ -230,8 +230,8 @@ def run_pipeline(args):
             # Retrain final model on all training data (best practice)
             with logger.timer("Retraining on all data"):
                 # Prepare all training data
-                X_full = train_data[selected_features].dropna()
-                y_full = train_data[TARGET_COL][X_full.index]
+                X_full = train_features[selected_features].dropna()
+                y_full = train_features[TARGET_COL][X_full.index]
 
                 # Retrain model
                 final_model = trainer.create_model(args.model)

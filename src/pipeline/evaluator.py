@@ -7,7 +7,7 @@ For detailed evaluation with visualizations, see utils.evaluation_utils.
 
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import GroupKFold
+from sklearn.model_selection import GroupKFold, KFold
 from sklearn.metrics import root_mean_squared_error, mean_absolute_error, r2_score
 
 # Import GridSearchCV for hyperparameter optimization (Workshop 3)
@@ -145,16 +145,16 @@ class Evaluator:
             cv_results[f'{metric}_std'] = np.std(values)
         
         # TODO Add MLflow cross-validation metrics logging (Workshop 4)
-        if mlflow.active_run():
+        #if mlflow.active_run():
             # Log cross-validation results (metrics only - must be numeric)
 
             # Add additional CV metadata (metrics only - must be numeric)
 
             # Log strategy as parameter (strings allowed in parameters)
-            mlflow.log_params({
-                'key1': value1,
-                'key2': value2,
-            })
+            #mlflow.log_params({
+             #   'key1': value1,
+              #  'key2': value2,
+            #})
 
         # Logging
         if logger.level >= LogLevel.NORMAL:
