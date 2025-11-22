@@ -1,0 +1,19 @@
+{
+  "selected_features": [
+    "sulphurdioxide_so2_column_number_density_amf",
+    "sulphurdioxide_solar_azimuth_angle",
+    "carbonmonoxide_co_column_number_density",
+    "carbonmonoxide_sensor_altitude",
+    "carbonmonoxide_solar_azimuth_angle",
+    "nitrogendioxide_no2_column_number_density",
+    "nitrogendioxide_tropospheric_no2_column_number_density",
+    "nitrogendioxide_solar_azimuth_angle",
+    "formaldehyde_tropospheric_hcho_column_number_density_amf",
+    "formaldehyde_solar_azimuth_angle",
+    "uvaerosolindex_solar_azimuth_angle",
+    "ozone_o3_column_number_density",
+    "ozone_solar_azimuth_angle",
+    "year",
+    "location"
+  ]
+}

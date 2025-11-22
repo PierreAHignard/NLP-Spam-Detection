@@ -244,7 +244,7 @@ class FeatureEngineer:
         # but are useful for understanding the data context
         if exclude_metadata:
             # Common metadata columns to exclude (but keep date as it's encoded as feature)
-            metadata_cols = ['id', 'folds', 'site_id', 'country', 'city', 'site_latitude', 'site_longitude','_source']
+            metadata_cols = ['id', 'folds', 'site_id', 'country', 'city', 'site_latitude', 'site_longitude','_source','location']
             exclude_cols.extend([col for col in metadata_cols if col in feature_cols])
 
         

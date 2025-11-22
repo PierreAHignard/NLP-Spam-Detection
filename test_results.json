@@ -1,7 +1,7 @@
 {
   "execution_metadata": {
-    "timestamp": "2025-11-22T15:05:36.954015",
-    "execution_time_seconds": 3.54,
+    "timestamp": "2025-11-22T17:04:05.961606",
+    "execution_time_seconds": 3.68,
     "runner_version": "Enhanced Test Runner v2.0",
     "environment": {
       "python_version": "3.13.9 (main, Oct 28 2025, 12:03:59) [MSC v.1944 64 bit (AMD64)]",
@@ -11,20 +11,20 @@
   },
   "test_summary": {
     "total_tests": 1,
-    "passed_tests": 1,
-    "failed_tests": 0,
-    "success_rate": 100.0,
+    "passed_tests": 0,
+    "failed_tests": 1,
+    "success_rate": 0.0,
     "test_modules": [
-      "feature_engineer"
+      "evaluator"
     ]
   },
   "detailed_results": {
-    "feature_engineer": true
+    "evaluator": false
   },
   "module_breakdown": {
-    "feature_engineer": {
-      "passed": true,
-      "status": "PASS"
+    "evaluator": {
+      "passed": false,
+      "status": "FAIL"
     }
   }
 }

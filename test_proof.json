@@ -1,10 +1,10 @@
 {
-  "message": "{\"git_context\":{\"author_email\":\"samuel.vaton@imt-atlantique.net\",\"author_name\":\"Samuel\",\"commit_hash\":\"3dded7a2789b0d84bd06add2f5c1e25fe5c17809\"},\"test_summary\":{\"execution_time\":3.54,\"passed_tests\":1,\"success_rate\":100.0,\"total_tests\":1},\"timestamp\":\"2025-11-22T15:05:36.975864\",\"version\":\"1.0\"}",
-  "message_hash": "nio7OWD+uiOnxRVcvRJzYkzMnl6Rze6Y9V0HKtNupYY=",
+  "message": "{\"git_context\":{\"author_email\":\"samuel.vaton@imt-atlantique.net\",\"author_name\":\"Samuel\",\"commit_hash\":\"52d78ef90a12d30333edae1f54bb32012ff2310e\"},\"test_summary\":{\"execution_time\":3.68,\"passed_tests\":0,\"success_rate\":0.0,\"total_tests\":1},\"timestamp\":\"2025-11-22T17:04:05.977484\",\"version\":\"1.0\"}",
+  "message_hash": "/nDkfaP5J+mbeqO+uMP/QoUz2F6S59WH5UO272RWqVQ=",
   "test_results": {
     "execution_metadata": {
-      "timestamp": "2025-11-22T15:05:36.954015",
-      "execution_time_seconds": 3.54,
+      "timestamp": "2025-11-22T17:04:05.961606",
+      "execution_time_seconds": 3.68,
       "runner_version": "Enhanced Test Runner v2.0",
       "environment": {
         "python_version": "3.13.9 (main, Oct 28 2025, 12:03:59) [MSC v.1944 64 bit (AMD64)]",
@@ -14,28 +14,28 @@
     },
     "test_summary": {
       "total_tests": 1,
-      "passed_tests": 1,
-      "failed_tests": 0,
-      "success_rate": 100.0,
+      "passed_tests": 0,
+      "failed_tests": 1,
+      "success_rate": 0.0,
       "test_modules": [
-        "feature_engineer"
+        "evaluator"
       ]
     },
     "detailed_results": {
-      "feature_engineer": true
+      "evaluator": false
     },
     "module_breakdown": {
-      "feature_engineer": {
-        "passed": true,
-        "status": "PASS"
+      "evaluator": {
+        "passed": false,
+        "status": "FAIL"
       }
     }
   },
   "git_info": {
-    "commit_hash": "3dded7a2789b0d84bd06add2f5c1e25fe5c17809",
+    "commit_hash": "52d78ef90a12d30333edae1f54bb32012ff2310e",
     "author_name": "Samuel",
     "author_email": "samuel.vaton@imt-atlantique.net"
   },
-  "timestamp": "2025-11-22T15:05:36.975864",
+  "timestamp": "2025-11-22T17:04:05.977484",
   "signature_placeholder": "INSTRUCTOR_SIGNATURE_REQUIRED"
 }

@@ -81,7 +81,7 @@ def run_pipeline(args):
         logger.step("Data Loading and Preprocessing", 1)
         with logger.timer("Data loading and preprocessing"):
             train_data, test_data = processor.load_and_preprocess()
-
+            
         # Add MLflow dataset logging (Workshop 4)
         if mlflow.active_run():
             # Log dataset inline (no separate function)
@@ -138,8 +138,8 @@ def run_pipeline(args):
 
         # Prepare data X, y, and groups for cross-validation
 
-        X = train_data[selected_features]
-        y = train_data[TARGET_COL]
+        X = train_features[selected_features]
+        y = train_features[TARGET_COL]
         groups = train_data["city"]
 
         if not args.optimize:
