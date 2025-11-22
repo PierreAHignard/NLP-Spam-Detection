@@ -84,31 +84,57 @@ class Evaluator:
         # If groups provided, use GroupKFold with N_SPLITS and RANDOM_STATE
         # Else if no groups provided, use KFold with N_SPLITS, shuffle=True and RANDOM_STATE
 
-        if groups == None:
-            gkf = GroupKFold(n_splits=N_SPLITS, shuffle=True, RANDOM_STATE=1) 
-            groups = X["city"]
+        print(" MDRR ")
+        print(X.head(5))
+        print(" X - Y ")
+        print(y.head(5))
+
+        train = X
+        train["pm2_5"] = y
+        train["fold"] = 0
+
+        X.reset_index(drop=True, inplace=True)  # Reset to positional index first
+
+        print("PAS MDRR ")
+        print(X.head(5))
+        print(" X - Y ")
+        print(y.head(5))
+
+        if groups is None:
+            gkf = KFold(n_splits=N_SPLITS, shuffle=True, random_state=RANDOM_STATE)#, random_state=RANDOM_STATE)
+            splits = gkf.split(X)
         else:
-            gfk = GroupKFold(n_splits=N_SPLITS, RANDOM_STATE=1)
+            gkf = GroupKFold(n_splits=N_SPLITS)
+            splits = gkf.split(X, y, groups=groups)
 
-        for fold, (train_index, test_index) in enumerate(gkf.split(X, y, groups=groups)):
-            X.loc[test_index, "fold"] = fold
-
+        for fold, (train_index, test_index) in enumerate(splits):
+            train.loc[test_index, "fold"] = fold
+        
         fold_results = []
         # TODO Perform cross-validation enumerating folds
         for i in range(N_SPLITS):
             # Split data
-            X_i = X[X["fold"] != i]
-            val_i = X[X["fold"] == i]
+            train_fold = train[train["fold"] != i]
+            val_fold = train[train["fold"] == i]
+
+            y_i = train_fold["pm2_5"]
+            X_i = train_fold.drop(columns=["pm2_5", "fold"])
+
+            val_X = val_fold.drop(columns=["pm2_5", "fold"])
+            val_y = val_fold["pm2_5"]
             # Train model
             model_i = model
+            model_i.fit(X_i, y_i)
             # Predict
-            predict_i = model.predict(X)
+            predict_i = model_i.predict(val_X)
             # Calculate metrics and append to fold_results
-            rmse_best = root_mean_squared_error(y, predict_i)
-            r2_best = r2_score(y, predict_i)
+            rmse_best = root_mean_squared_error(val_y, predict_i)
+            r2_best = r2_score(val_y, predict_i)
+            mae = mean_absolute_error(val_y, predict_i)
             # Logging
             print(" RMSE Score for i = ", i, " : ", rmse_best)
             print("r2_best for i = ", i, " : ", r2_best)
+            fold_results.append({"rmse":rmse_best, "r2": r2_best, "mae": mae})
         
         # Aggregate results
         cv_results = {}
