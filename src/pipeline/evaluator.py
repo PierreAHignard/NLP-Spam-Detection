@@ -83,18 +83,32 @@ class Evaluator:
         # TODO Set up GroupKFold cross-validation
         # If groups provided, use GroupKFold with N_SPLITS and RANDOM_STATE
         # Else if no groups provided, use KFold with N_SPLITS, shuffle=True and RANDOM_STATE
-        
+
+        if groups == None:
+            gkf = GroupKFold(n_splits=N_SPLITS, shuffle=True, RANDOM_STATE=1) 
+            groups = X["city"]
+        else:
+            gfk = GroupKFold(n_splits=N_SPLITS, RANDOM_STATE=1)
+
+        for fold, (train_index, test_index) in enumerate(gkf.split(X, y, groups=groups)):
+            X.loc[test_index, "fold"] = fold
+
         fold_results = []
         # TODO Perform cross-validation enumerating folds
+        for i in range(N_SPLITS):
             # Split data
-            
+            X_i = X[X["fold"] != i]
+            val_i = X[X["fold"] == i]
             # Train model
-            
+            model_i = model
             # Predict
-            
+            predict_i = model.predict(X)
             # Calculate metrics and append to fold_results
-            
+            rmse_best = root_mean_squared_error(y, predict_i)
+            r2_best = r2_score(y, predict_i)
             # Logging
+            print(" RMSE Score for i = ", i, " : ", rmse_best)
+            print("r2_best for i = ", i, " : ", r2_best)
         
         # Aggregate results
         cv_results = {}
