@@ -1,10 +1,10 @@
 {
-  "message": "{\"git_context\":{\"author_email\":\"samuel.vaton@imt-atlantique.net\",\"author_name\":\"Samuel\",\"commit_hash\":\"0e50d3b2113fbc006bf7f664ac63abba63d6ebf5\"},\"test_summary\":{\"execution_time\":3.22,\"passed_tests\":1,\"success_rate\":100.0,\"total_tests\":1},\"timestamp\":\"2025-11-21T17:33:57.201364\",\"version\":\"1.0\"}",
-  "message_hash": "IlyLMVxcvs7fvp3xFUxXj2RJYVs7PZJuHTgZizfBcrY=",
+  "message": "{\"git_context\":{\"author_email\":\"samuel.vaton@imt-atlantique.net\",\"author_name\":\"Samuel\",\"commit_hash\":\"3dded7a2789b0d84bd06add2f5c1e25fe5c17809\"},\"test_summary\":{\"execution_time\":3.54,\"passed_tests\":1,\"success_rate\":100.0,\"total_tests\":1},\"timestamp\":\"2025-11-22T15:05:36.975864\",\"version\":\"1.0\"}",
+  "message_hash": "nio7OWD+uiOnxRVcvRJzYkzMnl6Rze6Y9V0HKtNupYY=",
   "test_results": {
     "execution_metadata": {
-      "timestamp": "2025-11-21T17:33:57.194400",
-      "execution_time_seconds": 3.22,
+      "timestamp": "2025-11-22T15:05:36.954015",
+      "execution_time_seconds": 3.54,
       "runner_version": "Enhanced Test Runner v2.0",
       "environment": {
         "python_version": "3.13.9 (main, Oct 28 2025, 12:03:59) [MSC v.1944 64 bit (AMD64)]",
@@ -32,10 +32,10 @@
     }
   },
   "git_info": {
-    "commit_hash": "0e50d3b2113fbc006bf7f664ac63abba63d6ebf5",
+    "commit_hash": "3dded7a2789b0d84bd06add2f5c1e25fe5c17809",
     "author_name": "Samuel",
     "author_email": "samuel.vaton@imt-atlantique.net"
   },
-  "timestamp": "2025-11-21T17:33:57.201364",
+  "timestamp": "2025-11-22T15:05:36.975864",
   "signature_placeholder": "INSTRUCTOR_SIGNATURE_REQUIRED"
 }
