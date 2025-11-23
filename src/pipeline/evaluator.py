@@ -145,16 +145,21 @@ class Evaluator:
             cv_results[f'{metric}_std'] = np.std(values)
         
         # TODO Add MLflow cross-validation metrics logging (Workshop 4)
-        #if mlflow.active_run():
+        if mlflow.active_run():
             # Log cross-validation results (metrics only - must be numeric)
+            mlflow.log_metric("cv.rmse_mean", cv_results["rmse_mean"])
+            mlflow.log_metric("cv.rmse_std",  cv_results["rmse_std"])
+            mlflow.log_metric("cv.r2_mean",   cv_results["r2_mean"])
+            mlflow.log_metric("cv.r2_std",    cv_results["r2_std"])
 
             # Add additional CV metadata (metrics only - must be numeric)
+            mlflow.log_metric("cv.n_splits", N_SPLITS)
+            mlflow.log_metric("cv.train_rows", X.shape[0])
+            mlflow.log_metric("cv.features", X.shape[1])
 
             # Log strategy as parameter (strings allowed in parameters)
-            #mlflow.log_params({
-             #   'key1': value1,
-              #  'key2': value2,
-            #})
+            mlflow.log_param("cv_type", "GroupKFold" if groups is not None else "KFold")
+            mlflow.log_param("group_used", bool(groups is not None))
 
         # Logging
         if logger.level >= LogLevel.NORMAL:
@@ -186,18 +191,26 @@ class Evaluator:
         # Add hyperparameter optimization with geographic cross-validation (Workshop 3)
         # Configure GridSearchCV with geographic cross-validation
 
-        gscv = GridSearchCV(model,
-                            param_grid,
-                            n_jobs=-1,
-                            scoring='neg_root_mean_squared_error',
-                            verbose=logger.level # TODO check if it works (idk)
-        )
-
-        # Fit GridSearchCV
+       # Build GroupKFold BEFORE calling GridSearchCV
         if groups is not None:
             n_unique_groups = len(np.unique(groups))
             cv = GroupKFold(n_splits=min(N_SPLITS, n_unique_groups))
-            gscv.fit(X, y, groups=groups, cv=cv)
+        else:
+            cv = N_SPLITS
+
+        # GridSearchCV definition WITH cv here (not in fit)
+        gscv = GridSearchCV(
+            estimator=model,
+            param_grid=param_grid,
+            scoring='neg_root_mean_squared_error',
+            cv=cv,
+            n_jobs=-1,
+            verbose=1
+        )
+
+        # Fit grid search correctly
+        if groups is not None:
+            gscv.fit(X, y, groups=groups)
         else:
             gscv.fit(X, y)
 

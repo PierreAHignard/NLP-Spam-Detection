@@ -1,0 +1,16 @@
+creation_timestamp: 1763916849449
+current_stage: None
+deployment_job_state: null
+description: null
+last_updated_timestamp: 1763916849449
+model_id: m-d23641fee4974bf988b87c77a50bbf85
+name: air-quality-lightgbm
+run_id: 0b7a40bd4f014e3f87463eb85f1f4e45
+run_link: null
+source: models:/m-d23641fee4974bf988b87c77a50bbf85
+status: READY
+status_message: null
+storage_location: file:C:/Users/samue/Documents/Cours/cours IMT atlantique/A2/dasci/data
+  toolkits/projet airquality/git/ds-toolkit-project-1/mlruns/623571700207900113/models/m-d23641fee4974bf988b87c77a50bbf85/artifacts
+user_id: null
+version: 5

@@ -1,0 +1,15 @@
+artifact_uri: file:C:/Users/samue/Documents/Cours/cours IMT atlantique/A2/dasci/data
+  toolkits/projet airquality/git/ds-toolkit-project-1/mlruns/623571700207900113/4d9ff7c637a3452b89b6cd26e2c0bb87/artifacts
+end_time: 1763924937262
+entry_point_name: ''
+experiment_id: '623571700207900113'
+lifecycle_stage: active
+run_id: 4d9ff7c637a3452b89b6cd26e2c0bb87
+run_name: run
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763924914374
+status: 3
+tags: []
+user_id: samue

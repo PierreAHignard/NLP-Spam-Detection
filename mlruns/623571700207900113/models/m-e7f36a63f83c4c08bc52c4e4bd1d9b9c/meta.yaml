@@ -1,0 +1,11 @@
+artifact_location: file:C:/Users/samue/Documents/Cours/cours IMT atlantique/A2/dasci/data
+  toolkits/projet airquality/git/ds-toolkit-project-1/mlruns/623571700207900113/models/m-e7f36a63f83c4c08bc52c4e4bd1d9b9c/artifacts
+creation_timestamp: 1763916552497
+experiment_id: '623571700207900113'
+last_updated_timestamp: 1763916561444
+model_id: m-e7f36a63f83c4c08bc52c4e4bd1d9b9c
+model_type: null
+name: lightgbm_cv_model
+source_run_id: c2bc090647694202b2895f8aad3b1f37
+status: 2
+status_message: null

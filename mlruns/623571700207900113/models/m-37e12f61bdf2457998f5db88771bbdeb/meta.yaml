@@ -1,0 +1,11 @@
+artifact_location: file:C:/Users/samue/Documents/Cours/cours IMT atlantique/A2/dasci/data
+  toolkits/projet airquality/git/ds-toolkit-project-1/mlruns/623571700207900113/models/m-37e12f61bdf2457998f5db88771bbdeb/artifacts
+creation_timestamp: 1763917384132
+experiment_id: '623571700207900113'
+last_updated_timestamp: 1763917388354
+model_id: m-37e12f61bdf2457998f5db88771bbdeb
+model_type: null
+name: xgboost_cv_model
+source_run_id: b4f099005e014fdd969c91a09e0cc5f2
+status: 2
+status_message: null

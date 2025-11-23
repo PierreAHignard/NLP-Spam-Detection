@@ -1,0 +1,16 @@
+creation_timestamp: 1763920028623
+current_stage: None
+deployment_job_state: null
+description: null
+last_updated_timestamp: 1763920028623
+model_id: m-4512e36958bb4ec3be95cd9758220898
+name: air-quality-xgboost
+run_id: e1e75fb5b3774e00b0d2f1ba9079e805
+run_link: null
+source: models:/m-4512e36958bb4ec3be95cd9758220898
+status: READY
+status_message: null
+storage_location: file:C:/Users/samue/Documents/Cours/cours IMT atlantique/A2/dasci/data
+  toolkits/projet airquality/git/ds-toolkit-project-1/mlruns/623571700207900113/models/m-4512e36958bb4ec3be95cd9758220898/artifacts
+user_id: null
+version: 6
