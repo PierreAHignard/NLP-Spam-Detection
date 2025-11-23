@@ -60,6 +60,10 @@ def run_pipeline(args):
     mlflow.set_tag("mlflow.note.content",
                    f"Pipeline with {args.model} model and {args.n_features} features")
 
+    run = mlflow.active_run()
+    print("Run started:", run is not None)
+
+
 
     try:
         # Pipeline header with configuration
@@ -102,6 +106,8 @@ def run_pipeline(args):
             logger.data_info(f"Original features: {train_data.shape[1]}")
             logger.feature_info(f"Features after engineering: {train_features.shape[1]}")
 
+        print("11111111111111111111111111111111111")
+
         # Step 3: Feature Selection
         logger.step("Feature Selection", 3)
         with logger.timer("Feature selection"):
@@ -128,6 +134,7 @@ def run_pipeline(args):
         # Step 4: Cross-Validation Evaluation
         logger.step("Cross-Validation Evaluation", 4)
 
+        print("222222222222222222222222222222222222222222")
         # Initialize evaluator
         evaluator = Evaluator()
 
@@ -160,6 +167,7 @@ def run_pipeline(args):
 
                 with logger.timer("Cross-validation"):
                     cv_results = evaluator.cross_validate_model(model, X, y, groups)
+                print("333333333333333333333333333333333333333333333333")
 
             else:
                 # Grid exists → perform optimization

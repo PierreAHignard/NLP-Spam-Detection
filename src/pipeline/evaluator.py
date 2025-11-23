@@ -142,7 +142,11 @@ class Evaluator:
             values = [fold[metric] for fold in fold_results]
             cv_results[f'{metric}_mean'] = np.mean(values)
             cv_results[f'{metric}_std'] = np.std(values)
-        
+
+
+        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") 
+        print("ACTIVE RUN = ", mlflow.active_run())
+
         # TODO Add MLflow cross-validation metrics logging (Workshop 4)
         if mlflow.active_run():
             # Log cross-validation results (metrics only - must be numeric)

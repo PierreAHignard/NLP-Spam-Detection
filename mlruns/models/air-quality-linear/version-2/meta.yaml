@@ -1,16 +1,16 @@
-creation_timestamp: 1763933771695
+creation_timestamp: 1763941376280
 current_stage: None
 deployment_job_state: null
 description: null
-last_updated_timestamp: 1763933771695
-model_id: m-02e9906f0dca45a1bec041e0163204a9
+last_updated_timestamp: 1763941376280
+model_id: m-2b089de824ac4b91bb9238d30aea97e0
 name: air-quality-linear
-run_id: bbb51f94cc034fc7a7c0fb962576e0b6
+run_id: 59f0afac604b4dfbbc44908232fbde38
 run_link: null
-source: models:/m-02e9906f0dca45a1bec041e0163204a9
+source: models:/m-2b089de824ac4b91bb9238d30aea97e0
 status: READY
 status_message: null
 storage_location: file:C:/Users/samue/Documents/Cours/cours IMT atlantique/A2/dasci/data
-  toolkits/projet airquality/git/ds-toolkit-project-1/mlruns/206778530106229555/models/m-02e9906f0dca45a1bec041e0163204a9/artifacts
+  toolkits/projet airquality/git/ds-toolkit-project-1/mlruns/880947898731333196/models/m-2b089de824ac4b91bb9238d30aea97e0/artifacts
 user_id: null
 version: 2
