@@ -1,0 +1,11 @@
+artifact_location: file:C:/Users/samue/Documents/Cours/cours IMT atlantique/A2/dasci/data
+  toolkits/projet airquality/git/ds-toolkit-project-1/mlruns/206778530106229555/models/m-13790833b54f450a84e65a330c6052b1/artifacts
+creation_timestamp: 1763933771860
+experiment_id: '206778530106229555'
+last_updated_timestamp: 1763933776653
+model_id: m-13790833b54f450a84e65a330c6052b1
+model_type: null
+name: final_model
+source_run_id: bbb51f94cc034fc7a7c0fb962576e0b6
+status: 2
+status_message: null

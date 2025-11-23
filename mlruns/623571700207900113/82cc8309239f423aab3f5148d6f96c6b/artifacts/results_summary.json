@@ -1,9 +1,0 @@
-{
-  "Model": "xgboost",
-  "RMSE": "2230.642",
-  "R\u00b2": "0.382",
-  "Features": 15,
-  "Selection Method": "selectkbest",
-  "Optimized": true,
-  "Execution Time": "22.3 seconds"
-}

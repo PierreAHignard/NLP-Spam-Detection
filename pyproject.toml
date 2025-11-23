@@ -16,9 +16,9 @@ dependencies = [
     "seaborn~=0.13.2",
     "joblib~=1.5.1",
     "cryptography>=41.0.0",
-    "xgboost>=3.1.1",
-    "lightgbm>=4.6.0",
-    "mlflow>=3.6.0",
+    "xgboost>=3.0.1",
+    "lightgbm>=3.3.0",
+    "mlflow>=3.1.1",
 ]
 
 [dependency-groups]

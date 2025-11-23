@@ -95,7 +95,6 @@ class Evaluator:
 
         X.reset_index(drop=True, inplace=True)  # Reset to positional index first
 
-        print("PAS MDRR ")
         print(X.head(5))
         print(" X - Y ")
         print(y.head(5))
