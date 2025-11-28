@@ -6,7 +6,7 @@ Handles time-series data with geographical groupings properly.
 """
 
 import pandas as pd
-from sklearn.model_selection import GroupKFold, train_test_split
+from sklearn.model_selection import train_test_split
 
 from utils.config import DATA_PATH, SMS_FILE, EMAIL_FILE, RANDOM_STATE, LABEL_COL, MESSAGE_COL, TRAIN_TEST_SPLIT_SIZE
 
@@ -75,10 +75,12 @@ class DataProcessor:
     with special attention to temporal and geographic characteristics.
     """
     
-    def __init__(self):
+    def __init__(self, train_selection, test_selection):
         """Initialize the data processor."""
         self.sms_data = None
         self.email_data = None
+        self.train_selection = train_selection
+        self.test_selection = test_selection
     
     def load_data(self):
         """
@@ -106,7 +108,7 @@ class DataProcessor:
         logger.success("Data loading completed")
         return self.sms_data.copy(), self.email_data.copy()
 
-    def preprocess_data(self, train_selection, test_selection, drop_duplicates=True, balance=True):
+    def preprocess_data(self, drop_duplicates=True, balance=True):
         """
         Complete preprocessing pipeline.
         
@@ -139,11 +141,11 @@ class DataProcessor:
         test_data = []
 
             # SMS distribution
-        if "SMS" in train_selection and "SMS" not in test_selection:
+        if "SMS" in self.train_selection and "SMS" not in self.test_selection:
             train_data.append(sms_data)
-        if "SMS" not in train_selection and "SMS" in test_selection:
+        if "SMS" not in self.train_selection and "SMS" in self.test_selection:
             test_data.append(sms_data)
-        if "SMS" in train_selection and "SMS" in test_selection:
+        if "SMS" in self.train_selection and "SMS" in self.test_selection:
             temp_test, temp_train = train_test_split(sms_data,
                 test_size=TRAIN_TEST_SPLIT_SIZE,
                 random_state=RANDOM_STATE,
@@ -153,11 +155,11 @@ class DataProcessor:
             train_data.append(temp_train)
 
             # Email distribution
-        if "EMAIL" in train_selection and "EMAIL" not in test_selection:
+        if "EMAIL" in self.train_selection and "EMAIL" not in self.test_selection:
             train_data.append(email_data)
-        if "EMAIL" not in train_selection and "EMAIL" in test_selection:
+        if "EMAIL" not in self.train_selection and "EMAIL" in self.test_selection:
             test_data.append(email_data)
-        if "EMAIL" in train_selection and "EMAIL" in test_selection:
+        if "EMAIL" in self.train_selection and "EMAIL" in self.test_selection:
             temp_test, temp_train = train_test_split(email_data,
                 test_size=TRAIN_TEST_SPLIT_SIZE,
                 random_state=RANDOM_STATE,
