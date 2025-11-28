@@ -8,8 +8,7 @@ Handles time-series data with geographical groupings properly.
 import pandas as pd
 from sklearn.model_selection import GroupKFold, train_test_split
 
-from utils import TRAIN_TEST_SPLIT_SIZE
-from utils.config import DATA_PATH, SMS_FILE, EMAIL_FILE, RANDOM_STATE, LABEL_COL, MESSAGE_COL
+from utils.config import DATA_PATH, SMS_FILE, EMAIL_FILE, RANDOM_STATE, LABEL_COL, MESSAGE_COL, TRAIN_TEST_SPLIT_SIZE
 
 from utils.logger import get_logger
 import mlflow
@@ -145,7 +144,11 @@ class DataProcessor:
         if "SMS" not in train_selection and "SMS" in test_selection:
             test_data.append(sms_data)
         if "SMS" in train_selection and "SMS" in test_selection:
-            temp_test, temp_train = train_test_split(sms_data, test_size=TRAIN_TEST_SPLIT_SIZE, random_state=RANDOM_STATE, stratify=sms_data[LABEL_COL])
+            temp_test, temp_train = train_test_split(sms_data,
+                test_size=TRAIN_TEST_SPLIT_SIZE,
+                random_state=RANDOM_STATE,
+                stratify=sms_data[LABEL_COL])
+
             test_data.append(temp_test)
             train_data.append(temp_train)
 
@@ -155,7 +158,11 @@ class DataProcessor:
         if "EMAIL" not in train_selection and "EMAIL" in test_selection:
             test_data.append(email_data)
         if "EMAIL" in train_selection and "EMAIL" in test_selection:
-            temp_test, temp_train = train_test_split(email_data, test_size=TRAIN_TEST_SPLIT_SIZE, random_state=RANDOM_STATE, stratify=email_data[LABEL_COL])
+            temp_test, temp_train = train_test_split(email_data,
+                test_size=TRAIN_TEST_SPLIT_SIZE,
+                random_state=RANDOM_STATE,
+                stratify=email_data[LABEL_COL])
+
             test_data.append(temp_test)
             train_data.append(temp_train)
 
