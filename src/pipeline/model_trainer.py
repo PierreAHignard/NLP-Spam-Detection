@@ -2,26 +2,17 @@
 Model training module for Air Quality ML Pipeline.
 
 This module handles model training, comparison and evaluation.
-Students need to complete the TODO sections.
+Students need to complete the sections.
 """
 
-import pandas as pd
-import numpy as np
-import joblib
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 
-# Import additional models (Workshop 3)
-
-import xgboost as xgboost
-import lightgbm
-
-
-# Import MLflow (Workshop 4)
 import mlflow
 
-from utils.config import MODEL_TYPES, RANDOM_STATE, TARGET_COL, CITY_COL
+from utils.config import MODEL_TYPES, RANDOM_STATE
 from .evaluator import Evaluator
 from utils.logger import get_logger
+from sklearn.linear_model import LogisticRegression
 
 
 
@@ -51,26 +42,17 @@ class ModelTrainer:
         Returns:
             Initialized model instance
         """
-        if model_type not in MODEL_TYPES:
-            raise ValueError(f"Unknown model type: {model_type}. Available: {MODEL_TYPES}")
         
         # Create model instance based on model_type
-        if model_type == 'linear':
-            model = LinearRegression(**params)
-
-        # Add XGBoost and LightGBM model creation (Workshop 3)
-        elif model_type == "xgboost":
-            model = xgboost.XGBRegressor(objective='reg:squarederror', random_state=RANDOM_STATE, **params)
-
-        elif model_type == "lightgbm":
-            model = lightgbm.LGBMModel(objective='regression', verbose=-1, **params)
+        if model_type == 'logistic':
+            model = LogisticRegression(**params)
 
         else:
             raise ValueError(f"Unknown model type: {model_type}. Available: {MODEL_TYPES}")
         
         return model
     
-    def train_single_model(self, X, y, model_type='linear', **model_params):
+    def train_single_model(self, X, y, model_type='logistic', **model_params):
         """
         Train a single model.
         
@@ -91,23 +73,24 @@ class ModelTrainer:
         if mlflow.active_run():
             mlflow.log_params({
                 'model_type': model_type,
-                'n_features': len(X),
-                'n_samples': len(y),
                 **model_params  # Unpacks additional parameters
             })
         
         # Train the model
         model = self.create_model(model_type, **model_params)
         model = model.fit(X, y)
+
         # Store trained model
         self.trained_models[model_type] = model
         y_pred = model.predict(X)
+
         # Calculate training score
         metrics = self.evaluator.calculate_metrics(y, y_pred)
-        train_score = metrics["r2"]
+        train_score = metrics["accuracy"]
+
         # Logging
         with logger.indent():
-            logger.model_info(f"Training R² score: {train_score:.4f}")
+            logger.model_info(f"Training accuracy: {train_score:.4f}")
         
         logger.success(f"{model_type.title()} model training completed")
 
@@ -120,15 +103,17 @@ class ModelTrainer:
         
         Args:
             model: Trained model
-            X: Feature matrix
+            X: Tokenised texts
             
         Returns:
             Predictions array
         """
         logger = get_logger()
+        logger.substep(f"Starting model inference on {len(X)} samples")
         
         # Make predictions using model
         predictions = model.predict(X)
+
         # Logging
         logger.success(f"Generated {len(predictions)} predictions")
         
