@@ -5,228 +5,75 @@ This module provides core evaluation functionality used by the package.
 For detailed evaluation with visualizations, see utils.evaluation_utils.
 """
 
-import pandas as pd
-import numpy as np
-from sklearn.model_selection import GroupKFold, KFold
-from sklearn.metrics import root_mean_squared_error, mean_absolute_error, r2_score
-
-# Import GridSearchCV for hyperparameter optimization (Workshop 3)
-
+from sklearn.metrics import precision_score, accuracy_score, recall_score
 from sklearn.model_selection import GridSearchCV
-
-# Import MLflow (Workshop 4)
+from utils.logger import get_logger, LogLevel
+from utils.config import CROSS_VALIDATION
 
 import mlflow
 
-from utils.config import N_SPLITS, RANDOM_STATE
-from utils.logger import get_logger, LogLevel
-
-
-class Evaluator:
+def calculate_metrics(y_true, y_pred):
     """
-    Core evaluator for air quality prediction models.
-    
-    This class handles basic model evaluation including cross-validation
-    and metrics calculation used by the package components.
+    Calculate comprehensive regression metrics.
+
+    Args:
+        y_true: True target values
+        y_pred: Predicted values
+
+    Returns:
+        Dictionary with calculated metrics
     """
-    
-    def __init__(self):
-        """Initialize the evaluator."""
-        pass
-    
-    def calculate_metrics(self, y_true, y_pred):
-        """
-        Calculate comprehensive regression metrics.
-        
-        Args:
-            y_true: True target values
-            y_pred: Predicted values
-            
-        Returns:
-            Dictionary with calculated metrics
-        """
-        # Calculate comprehensive regression metrics
-        rmse = root_mean_squared_error(y_true, y_pred)
-        mae = mean_absolute_error(y_true, y_pred)
-        r2 = r2_score(y_true, y_pred)
+    # Assert
+    assert len(y_true) == len(y_pred)
 
-        # Create metrics dictionary
-        metrics = {
-            'rmse': rmse,
-            'mae': mae,
-            'r2': r2
-        }
-        print(" Y_TRUE : ", y_true)
-        print(" Y_PRED : ", y_pred)
-        print(metrics)
-        return metrics
-    
-    def cross_validate_model(self, model, X, y, groups=None):
-        """
-        Perform cross-validation using GroupKFold.
-        
-        This method uses GroupKFold to ensure entire cities are either in training 
-        OR validation, never both, preventing data leakage.
-        
-        Args:
-            model: Scikit-learn model to evaluate
-            X: Feature matrix
-            y: Target variable
-            groups: Grouping variable for GroupKFold (e.g., cities)
-            
-        Returns:
-            Dictionary with cross-validation results
-        """
-        logger = get_logger()
-        logger.info(f"Cross-validating {model.__class__.__name__}...", LogLevel.NORMAL)
-        
-        # TODO Set up GroupKFold cross-validation
-        # If groups provided, use GroupKFold with N_SPLITS and RANDOM_STATE
-        # Else if no groups provided, use KFold with N_SPLITS, shuffle=True and RANDOM_STATE
+    # Create metrics dictionary
+    metrics = {
+        'accuracy': accuracy_score(y_true, y_pred, average='binary'),
+        'precision': precision_score(y_true, y_pred, average='binary'),
+        'recall': recall_score(y_true, y_pred, average='binary')
+    }
 
-        print(" MDRR ")
-        print(X.head(5))
-        print(" X - Y ")
-        print(y.head(5))
+    return metrics
 
-        train = X
-        train["pm2_5"] = y
-        train["fold"] = 0
+def hyperparameter_optimization(model, param_grid, X, y):
+    """
+    Perform hyperparameter optimization using GridSearchCV with geographic cross-validation.
 
-        X.reset_index(drop=True, inplace=True)  # Reset to positional index first
+    This method combines GridSearchCV with GroupKFold to ensure that entire cities
+    are either in training OR validation during hyperparameter search, preventing data leakage.
 
-        print(X.head(5))
-        print(" X - Y ")
-        print(y.head(5))
+    Args:
+        model: Scikit-learn model to optimize
+        param_grid: Dictionary of hyperparameters to search
+        X: Feature matrix
+        y: Target variable
 
-        if groups is None:
-            gkf = KFold(n_splits=N_SPLITS, shuffle=True, random_state=RANDOM_STATE)#, random_state=RANDOM_STATE)
-            splits = gkf.split(X)
-        else:
-            gkf = GroupKFold(n_splits=N_SPLITS)
-            splits = gkf.split(X, y, groups=groups)
+    Returns:
+        Tuple of (best_model, best_params, best_score)
+    """
+    logger = get_logger()
+    logger.info(f"Optimizing hyperparameters for {model.__class__.__name__}...", LogLevel.NORMAL)
 
-        for fold, (train_index, test_index) in enumerate(splits):
-            train.loc[test_index, "fold"] = fold
-        
-        fold_results = []
-        # TODO Perform cross-validation enumerating folds
-        for i in range(N_SPLITS):
-            # Split data
-            train_fold = train[train["fold"] != i]
-            val_fold = train[train["fold"] == i]
+    # GridSearchCV definition
+    gscv = GridSearchCV(
+        estimator=model,
+        param_grid=param_grid,
+        scoring='precision',
+        cv=CROSS_VALIDATION,
+        n_jobs=-1,
+        verbose=1
+    )
 
-            y_i = train_fold["pm2_5"]
-            X_i = train_fold.drop(columns=["pm2_5", "fold"])
+    gscv.fit(X, y)
 
-            val_X = val_fold.drop(columns=["pm2_5", "fold"])
-            val_y = val_fold["pm2_5"]
-            # Train model
-            model_i = model
-            model_i.fit(X_i, y_i)
-            # Predict
-            predict_i = model_i.predict(val_X)
-            # Calculate metrics and append to fold_results
-            rmse_best = root_mean_squared_error(val_y, predict_i)
-            r2_best = r2_score(val_y, predict_i)
-            mae = mean_absolute_error(val_y, predict_i)
-            # Logging
-            print(" RMSE Score for i = ", i, " : ", rmse_best)
-            print("r2_best for i = ", i, " : ", r2_best)
-            fold_results.append({"rmse":rmse_best, "r2": r2_best, "mae": mae})
-        
-        # Aggregate results
-        cv_results = {}
-        # Enumerate metrics and calculate mean/std across folds
-        for metric in fold_results[0].keys():
-            values = [fold[metric] for fold in fold_results]
-            cv_results[f'{metric}_mean'] = np.mean(values)
-            cv_results[f'{metric}_std'] = np.std(values)
+    # Extract results
+    best_model = gscv.best_estimator_
+    best_params = gscv.best_params_
+    best_score = gscv.best_score_
 
+    # Logging
+    logger.success(f"Best precision: {best_score:.3f}")
+    logger.info(f"  Best parameters: {best_params}")
 
-        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") 
-        print("ACTIVE RUN = ", mlflow.active_run())
-
-        # TODO Add MLflow cross-validation metrics logging (Workshop 4)
-        if mlflow.active_run():
-            # Log cross-validation results (metrics only - must be numeric)
-            mlflow.log_metric("cv.rmse_mean", cv_results["rmse_mean"])
-            mlflow.log_metric("cv.rmse_std",  cv_results["rmse_std"])
-            mlflow.log_metric("cv.r2_mean",   cv_results["r2_mean"])
-            mlflow.log_metric("cv.r2_std",    cv_results["r2_std"])
-
-            # Add additional CV metadata (metrics only - must be numeric)
-            mlflow.log_metric("cv.n_splits", N_SPLITS)
-            mlflow.log_metric("cv.train_rows", X.shape[0])
-            mlflow.log_metric("cv.features", X.shape[1])
-
-            # Log strategy as parameter (strings allowed in parameters)
-            mlflow.log_param("cv_type", "GroupKFold" if groups is not None else "KFold")
-            mlflow.log_param("group_used", bool(groups is not None))
-
-        # Logging
-        if logger.level >= LogLevel.NORMAL:
-            print(f"  Average: RMSE={cv_results['rmse_mean']:.3f}±{cv_results['rmse_std']:.3f}")
-        
-        return cv_results
-    
-    
-    def hyperparameter_optimization_cv(self, model, param_grid, X, y, groups=None):
-        """
-        Perform hyperparameter optimization using GridSearchCV with geographic cross-validation.
-        
-        This method combines GridSearchCV with GroupKFold to ensure that entire cities
-        are either in training OR validation during hyperparameter search, preventing data leakage.
-        
-        Args:
-            model: Scikit-learn model to optimize
-            param_grid: Dictionary of hyperparameters to search
-            X: Feature matrix
-            y: Target variable
-            groups: Grouping variable for GroupKFold (e.g., cities)
-            
-        Returns:
-            Tuple of (best_model, best_params, best_score)
-        """
-        logger = get_logger()
-        logger.info(f"Optimizing hyperparameters for {model.__class__.__name__}...", LogLevel.NORMAL)
-        
-        # Add hyperparameter optimization with geographic cross-validation (Workshop 3)
-        # Configure GridSearchCV with geographic cross-validation
-
-       # Build GroupKFold BEFORE calling GridSearchCV
-        if groups is not None:
-            n_unique_groups = len(np.unique(groups))
-            cv = GroupKFold(n_splits=min(N_SPLITS, n_unique_groups))
-        else:
-            cv = N_SPLITS
-
-        # GridSearchCV definition WITH cv here (not in fit)
-        gscv = GridSearchCV(
-            estimator=model,
-            param_grid=param_grid,
-            scoring='neg_root_mean_squared_error',
-            cv=cv,
-            n_jobs=-1,
-            verbose=1
-        )
-
-        # Fit grid search correctly
-        if groups is not None:
-            gscv.fit(X, y, groups=groups)
-        else:
-            gscv.fit(X, y)
-
-        # Extract results (GridSearchCV returns negative RMSE, convert to positive)
-
-        best_model = gscv.best_estimator_
-        best_params = gscv.best_params_
-        best_score = -gscv.best_score_ #Since output is negative
-
-        # Logging
-        logger.success(f"Best RMSE: {best_score:.3f}")
-        if logger.level >= LogLevel.NORMAL:
-            print(f"  Best parameters: {best_params}")
-        
-        return best_model, best_params, best_score
+    return best_model, best_params, best_score
 
