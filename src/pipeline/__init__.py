@@ -1,5 +1,5 @@
 """
-Air Quality ML Pipeline Package
+NLP ML Pipeline Package
 
 This package contains the core machine learning pipeline components:
 - DataProcessor: Data loading and preprocessing
@@ -17,11 +17,9 @@ __version__ = "1.0.0"
 from .data_processor import DataProcessor
 from .feature_engineer import FeatureEngineer
 from .model_trainer import ModelTrainer
-from .evaluator import Evaluator
 
 __all__ = [
     'DataProcessor',
     'FeatureEngineer', 
-    'ModelTrainer',
-    'Evaluator'
+    'ModelTrainer'
 ]

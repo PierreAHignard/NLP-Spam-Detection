@@ -21,7 +21,7 @@ Usage:
 """
 
 __version__ = "2.0.0"
-__author__ = "Air Quality ML Workshop - Restructured"
+__author__ = "NLP ML Workshop - Restructured"
 
 # Import main pipeline classes for backward compatibility
 from pipeline import DataProcessor, FeatureEngineer, ModelTrainer, Evaluator
