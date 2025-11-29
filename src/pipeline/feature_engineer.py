@@ -6,32 +6,20 @@ Students need to complete the sections.
 """
 
 import re
-
-from sklearn.feature_extraction.text import CountVectorizer
-
-from utils.config import NUMBER_PLACEHOLDER, NB_FEATURES, TOKEN_REGEX
+import string
+import nltk
 import mlflow
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
+from utils.config import NB_FEATURES, TOKEN_REGEX
 from utils.logger import get_logger
 
-
-def preprocess(txt: str):
-    """
-    Replace all numbers in text with <NUM> token.
-
-    Args:
-        txt (str): Input text containing numbers
-
-    Returns:
-        str: Text with numbers replaced by <NUM>
-    """
-
-    return re.sub(r'\d+', NUMBER_PLACEHOLDER, txt)
 
 class FeatureEngineer:
     """
     Feature engineer for air quality prediction.
-    
+
     Handles temporal feature extraction, geographic feature creation,
     categorical encoding, and feature selection.
     """
@@ -44,17 +32,38 @@ class FeatureEngineer:
     def tokeniser(self, train_msg, test_msg):
         logger = get_logger()
 
-        if self.count_vectorizer is None:
-            self.count_vectorizer = CountVectorizer(
-                input='content',
-                max_features=NB_FEATURES,
-                token_pattern=TOKEN_REGEX,
-                preprocessor=preprocess,
-                stop_words=self.stop_words
-            )
+        if self.vectorizer is None:
 
-            self.count_vectorizer.fit(train_msg)
+            # Define common arguments to avoid repetition
+            vectorizer_args = {
+                'input': 'content',
+                'max_features': NB_FEATURES,
+                'token_pattern': TOKEN_REGEX,
+                'preprocessor': self.preprocess,
+                'stop_words': self._stop_words_list
+            }
 
-            logger.info(f"Count vectorizer fitted, with {len(self.count_vectorizer.vocabulary_)} features.")
+            # Initialize the specific vectorizer based on the init parameter
+            if self.vectorizer_type == 'tfidf':
+                self.vectorizer = TfidfVectorizer(**vectorizer_args)
+            else:
+                self.vectorizer = CountVectorizer(**vectorizer_args)
 
-        return self.count_vectorizer.transform(train_msg), self.count_vectorizer.transform(test_msg)
+            self.vectorizer.fit(train_msg)
+
+            if mlflow.active_run():
+                # Dynamically log the class name (CountVectorizer or TfidfVectorizer)
+                vec_name = self.vectorizer.__class__.__name__
+                mlflow.log_params({
+                    f'{vec_name}.vocabulary_size': len(self.vectorizer.vocabulary_),
+                    f'{vec_name}.token_pattern': TOKEN_REGEX,
+                    f'{vec_name}.stop_words': self.stop_words,
+                    f'{vec_name}.lowercase': self.lowercase,
+                    f'{vec_name}.number_placeholder': self.number_placeholder,
+                    f'{vec_name}.remove_punctuation': self.remove_punctuation,
+                    'vectorizer_type': self.vectorizer_type
+                })
+
+            logger.info(f"{self.vectorizer.__class__.__name__} fitted, with {len(self.vectorizer.vocabulary_)} features.")
+
+        return self.vectorizer.transform(train_msg), self.vectorizer.transform(test_msg)
