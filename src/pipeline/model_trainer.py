@@ -4,16 +4,18 @@ Model training module for Air Quality ML Pipeline.
 This module handles model training, comparison and evaluation.
 Students need to complete the sections.
 """
-
-from sklearn.linear_model import LinearRegression, Ridge, Lasso
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import SGDClassifier
 
 import mlflow
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.svm import LinearSVC
 
-from utils.config import MODEL_TYPES, RANDOM_STATE
-from .evaluator import Evaluator
+from utils import RANDOM_STATE
+from utils.config import MODEL_TYPES
 from utils.logger import get_logger
 from sklearn.linear_model import LogisticRegression
-
+from pipeline.evaluator import calculate_metrics
 
 
 class ModelTrainer:
@@ -27,7 +29,6 @@ class ModelTrainer:
     def __init__(self):
         """Initialize the model trainer."""
         self.trained_models = {}
-        self.evaluator = Evaluator()
         self.best_model = None
         self.best_model_name = None
     
@@ -44,8 +45,16 @@ class ModelTrainer:
         """
         
         # Create model instance based on model_type
-        if model_type == 'logistic':
-            model = LogisticRegression(**params)
+        if model_type == 'Logistic_Regression':
+            model = LogisticRegression(random_state=RANDOM_STATE)
+        elif model_type == "Multinomial_NB":
+            model = MultinomialNB()
+        elif model_type == "Linear_SVC":
+            model = LinearSVC(dual="auto", random_state=RANDOM_STATE)
+        elif model_type == "SGD_Classifier":
+            model = SGDClassifier(loss='hinge', random_state=RANDOM_STATE)
+        elif model_type == "Random_Forest":
+            model = RandomForestClassifier(n_estimators=100, random_state=RANDOM_STATE)
 
         else:
             raise ValueError(f"Unknown model type: {model_type}. Available: {MODEL_TYPES}")
@@ -72,7 +81,6 @@ class ModelTrainer:
 
         if mlflow.active_run():
             mlflow.log_params({
-                'model_type': model_type,
                 **model_params  # Unpacks additional parameters
             })
         
@@ -85,13 +93,14 @@ class ModelTrainer:
         y_pred = model.predict(X)
 
         # Calculate training score
-        metrics = self.evaluator.calculate_metrics(y, y_pred)
-        train_score = metrics["accuracy"]
+        metrics = calculate_metrics(y, y_pred)
 
         # Logging
         with logger.indent():
-            logger.model_info(f"Training accuracy: {train_score:.4f}")
-        
+            logger.model_info(f"Training accuracy: {metrics["accuracy"]:.4f}")
+            logger.model_info(f"Training precision: {metrics["precision"]:.4f}")
+            logger.model_info(f"Training recall: {metrics["recall"]:.4f}")
+
         logger.success(f"{model_type.title()} model training completed")
 
         return model
