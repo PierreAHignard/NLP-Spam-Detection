@@ -28,14 +28,14 @@ def calculate_metrics(y_true, y_pred):
 
     # Create metrics dictionary
     metrics = {
-        'accuracy': accuracy_score(y_true, y_pred, average='binary'),
-        'precision': precision_score(y_true, y_pred, average='binary'),
-        'recall': recall_score(y_true, y_pred, average='binary')
+        'accuracy': round(accuracy_score(y_true, y_pred), 3),
+        'precision': round(precision_score(y_true, y_pred), 3),
+        'recall': round(recall_score(y_true, y_pred), 3)
     }
 
     return metrics
 
-def hyperparameter_optimization(model, param_grid, X, y):
+def hyperparameter_optimization_cv(model, param_grid, X, y):
     """
     Perform hyperparameter optimization using GridSearchCV with geographic cross-validation.
 
@@ -61,7 +61,7 @@ def hyperparameter_optimization(model, param_grid, X, y):
         scoring='precision',
         cv=CROSS_VALIDATION,
         n_jobs=-1,
-        verbose=1
+
     )
 
     gscv.fit(X, y)
