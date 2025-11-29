@@ -20,68 +20,76 @@ DATA_PATH = PROJECT_ROOT / "data"
 # =============================================================================
 
 # File names
-TRAIN_FILE = "train.csv"
-TEST_FILE = "test.csv"
+SMS_FILE = "sms_spam.csv"
+EMAIL_FILE = "email_spam.csv"
 
 # Column names
-ID_COL = "id"
-TARGET_COL = "pm2_5"
-DATE_COL = "date"
-CITY_COL = "city"
-COUNTRY_COL = "country"
-LATITUDE_COL = "site_latitude"
-LONGITUDE_COL = "site_longitude"
+MESSAGE_COL = "message"
+LABEL_COL = "label"
 
 # =============================================================================
 # PREPROCESSING CONFIGURATION
 # =============================================================================
 
-# Missing data threshold (drop columns with more than X% missing)
-MISSING_THRESHOLD = 0.7
-
-# Cross-validation splits
-N_SPLITS = 4
+# Train-Test Split
+TRAIN_TEST_SPLIT_SIZE = 0.2
 
 # =============================================================================
 # FEATURE ENGINEERING CONFIGURATION
 # =============================================================================
 
-# Temporal features to extract
-TEMPORAL_FEATURES = ["year", "month", "day", "quarter", "week", "dayofweek"]
-
-# Number of features to select
-N_FEATURES_SELECTKBEST = 15
-N_FEATURES_RFE = 15
+TOKEN_REGEX = r"(\S+)"
+NB_FEATURES = 5000
 
 # =============================================================================
 # MODEL CONFIGURATION
 # =============================================================================
 
-## Available model types
-#MODEL_TYPES = ["linear"]
-
-# Add XGBoost and LightGBM support (Workshop 3)
 # Available model types
-MODEL_TYPES = ["linear", "xgboost", "lightgbm"]
+MODEL_TYPES = ["Logistic_Regression", "Multinomial_NB", "Linear_SVC", "SGD_Classifier", "Random_Forest"]
 
 # Default hyperparameter grids for optimization
 DEFAULT_PARAM_GRIDS = {
-    "xgboost": {
-        'n_estimators': [100],
-        'max_depth': [3, 5, 7],
-        'learning_rate': [0.01, 0.1, 0.2],
-        'subsample': [0.7, 1.0],
-        'colsample_bytree': [0.7, 1.0]
+    "Logistic_Regression": {
+        # C: Inverse of regularization strength (smaller = stronger regularization)
+        "C": [0.1, 1.0, 10.0],
+        # L1 is good for sparse text (feature selection), L2 is standard
+        "penalty": ["l1", "l2"]
     },
-    "lightgbm": {
-        'n_estimators': [100],
-        'max_depth': [3, 5, 7],
-        'learning_rate': [0.01, 0.1, 0.2],
-        'subsample': [0.7, 1.0],
-        'colsample_bytree': [0.7, 1.0]
+
+    "Multinomial_NB": {
+        # Alpha: Additive smoothing (Laplace/Lidstone).
+        # 0.0 means no smoothing, 1.0 is standard Laplace.
+        "alpha": [0.01, 0.1, 0.5, 1.0],
+        # Whether to learn class prior probabilities or assume uniform
+        "fit_prior": [True, False]
+    },
+
+    "Linear_SVC": {
+        "C": [0.1, 1.0, 10.0],
+        # 'hinge' is the standard SVM loss, 'squared_hinge' is differentiable
+        "loss": ["hinge", "squared_hinge"],
+    },
+
+    "SGD_Classifier": {
+        # 'hinge' = SVM, 'log_loss' = Logistic Regression, 'perceptron'
+        "loss": ["hinge", "log_loss"],
+        # Regularization type
+        "penalty": ["l2", "l1", "elasticnet"],
+        # Constant that multiplies the regularization term (lambda)
+        "alpha": [1e-4, 1e-3, 1e-2]
+    },
+
+    "Random_Forest": {
+        "n_estimators": [50, 100, 200],
+        # Max depth is crucial for NLP to prevent overfitting on noise
+        "max_depth": [None, 10, 30],
+        # Minimum samples required to split an internal node
+        "min_samples_split": [2, 5]
     }
 }
-# TODO_END
+
+CROSS_VALIDATION = 5
 
 # Random state for reproducibility
 RANDOM_STATE = 42
@@ -91,8 +99,8 @@ RANDOM_STATE = 42
 # MLFLOW CONFIGURATION
 # =============================================================================
 
-# TODO Add MLflow tracking configuration (Workshop 4)
-MLFLOW_EXPERIMENT_NAME = "air_quality_ml"
+# Add MLflow tracking configuration (Workshop 4)
+MLFLOW_EXPERIMENT_NAME = "Spam Detection"
 MLFLOW_TRACKING_URI = "./mlruns"
 # TODO_END
 
@@ -100,9 +108,8 @@ MLFLOW_TRACKING_URI = "./mlruns"
 # EVALUATION CONFIGURATION
 # =============================================================================
 
-
 # Metrics to calculate
-METRICS = ["rmse", "mae", "r2", "mape"]
+METRICS = ["accuracy", "recall", "precision"]
 
 def get_data_file_path(filename):
     """Get full path to a data file."""
