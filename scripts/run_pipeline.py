@@ -99,51 +99,48 @@ def run_pipeline(args):
             logger.info(f"Features: {args.n_features}")
             logger.info(f"Selection method: {args.method}")
             logger.info(f"Optimization: {'Enabled' if args.optimize else 'Disabled'}")
-            logger.info(f"MLflow tracking: {'Enabled' if args.mlflow else 'Disabled'}")
-            if args.mlflow:
-                logger.info("Final model will be retrained on all data and registered in MLflow")
+
+############################################### DATA PIPELINE ##########################################################
+
+        # Create the dataset selection
+        train_selection = list(args.train_datasets)
+        test_selection = list(args.test_datasets)
+
+        with logger.indent():
+            logger.data_info(f"Train data : {train_selection}")
+            logger.data_info(f"Test data : {test_selection}")
+
+        if mlflow.active_run():
+            mlflow.log_params({
+                "train.sms": "SMS" in train_selection,
+                "train.email": "EMAIL" in train_selection,
+                "test.sms": "SMS" in test_selection,
+                "test.email": "EMAIL" in test_selection,
+            })
 
         # Initialize components
-        processor = DataProcessor()
-        engineer = FeatureEngineer()
+        processor = DataProcessor(train_selection, test_selection)
+        engineer = FeatureEngineer(
+            stop_words=args.stop_words,
+            lowercase=args.lowercase,
+            remove_punctuation=args.remove_punctuation,
+            number_placeholder=args.number_placeholder,
+            vectorizer_type=args.vectorizer_type
+        )
         trainer = ModelTrainer()
 
         # Step 1: Data Loading and Preprocessing
         logger.step("Data Loading and Preprocessing", 1)
         with logger.timer("Data loading and preprocessing"):
-            train_data, test_data = processor.load_and_preprocess()
-            
-        # Add MLflow dataset logging (Workshop 4)
-        if mlflow.active_run():
-            # Log dataset inline (no separate function)
-            # Log dataset metrics
-            mlflow.log_param("dataset.train_size", len(train_data))
-            mlflow.log_param("dataset.test_size", len(test_data))
-            mlflow.log_metric("dataset.train_rows", len(train_data))
-            mlflow.log_metric("dataset.test_rows", len(test_data))
-            mlflow.log_param("dataset.initial_features", train_data.shape[1])
-
-        # Step 2: Feature Engineering
-        logger.step("Feature Engineering", 2)
-        with logger.timer("Feature engineering"):
-            train_features, test_features = engineer.extract_all_features(train_data, test_data)
-
-        with logger.indent():
-            logger.data_info(f"Original features: {train_data.shape[1]}")
-            logger.feature_info(f"Features after engineering: {train_features.shape[1]}")
-
-        print("11111111111111111111111111111111111")
-
-        # Step 3: Feature Selection
-        logger.step("Feature Selection", 3)
-        with logger.timer("Feature selection"):
-            selected_features = engineer.select_best_features(
-                train_features, 
-                method=args.method, 
-                n_features=args.n_features
+            train_msg, train_lab, test_msg, test_lab = processor.load_and_preprocess(
+                drop_duplicates=True,
+                balance= not args.optimize # Shouldn't balance if there is cross-validation
             )
 
-        logger.feature_info(f"Selected {len(selected_features)} features")
+        # Step 2: Feature Engineering
+        logger.step("Text Preprocessing and Tokenisation", 2)
+        with logger.timer("Text Preprocessing and Tokenisation"):
+            train_msg, test_msg = engineer.tokeniser(train_msg, test_msg)
 
         # Add MLflow feature selection logging (Workshop 4)
             # Note: engineer.select_best_features() already logs MLflow parameters
