@@ -64,6 +64,11 @@ def parse_arguments():
     )
 
     parser.add_argument(
+        '--vocabulary_size', type=int, default=5000,
+        help='Max number of tokens to learn (will keep the N most present)'
+    )
+
+    parser.add_argument(
         '--lowercase', action='store_true',
         help='Lowercase all tokens'
     )

@@ -12,7 +12,7 @@ import mlflow
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
-from utils.config import NB_FEATURES, TOKEN_REGEX
+from utils.config import TOKEN_REGEX
 from utils.logger import get_logger
 
 
@@ -30,7 +30,8 @@ class FeatureEngineer:
             number_placeholder: bool = False,
             lowercase: bool = False,
             remove_punctuation: bool = False,
-            vectorizer_type: str = 'count'
+            vectorizer_type: str = 'count',
+            max_features: int = 5000
         ):
         """
         Initialize the feature engineer.
@@ -45,6 +46,7 @@ class FeatureEngineer:
         self.number_placeholder = number_placeholder
         self.lowercase = lowercase
         self.remove_punctuation = remove_punctuation
+        self.max_features = max_features
 
         self._stop_words_list = None
 
@@ -90,7 +92,7 @@ class FeatureEngineer:
             # Define common arguments to avoid repetition
             vectorizer_args = {
                 'input': 'content',
-                'max_features': NB_FEATURES,
+                'max_features': self.max_features,
                 'token_pattern': TOKEN_REGEX,
                 'preprocessor': self.preprocess,
                 'stop_words': self._stop_words_list

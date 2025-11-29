@@ -40,13 +40,13 @@ The codebase is organized into reusable class-based components:
 
 ### 1. Model Selection & Efficiency 
 
-[Model Performance Comparison](images/by_model.png)
+![Model Performance Comparison](images/by_model.png)
 
 We benchmarked four distinct architectures: Logistic Regression, Multinomial Naive Bayes, Linear SVC, and Random Forest.
 
 **Performance Comparison**: *Result: Linear SVC and Logistic Regression performed comparably well in accuracy.*
 
-[Training Duration Analysis](images/training_duration_by_model.png)
+![Training Duration Analysis](images/training_duration_by_model.png)
 
 **Training Duration**: *Result: While Random Forest is robust, it is ~2x slower than Linear SVC. **Linear SVC** was chosen as the production model for its optimal speed-to-performance ratio.*
 
@@ -65,13 +65,13 @@ We performed extensive A/B testing on preprocessing configurations.
 #### Stop-Words Impact:
 * **Insight**: Removing stop words (using NLTK) versus keeping them showed minimal difference in Accuracy, but keeping them slightly improved context in some edge cases.
 
-[Vectorization Strategy Comparison](images/if_stop-words.png)
+![Vectorization Strategy Comparison](images/if_stop-words.png)
 
 #### Optimization Trade-offs (Precision vs Recall):
 * **Strategy**: In this iteration, `GridSearchCV` parameters resulted in a model biased towards **Recall** (Blue bars).
 * **Business Logic**: We prioritized catching all spam (High Recall) at the cost of occasionally flagging legitimate emails. For a user-centric product, future iterations would re-balance for Precision.
 
-[Optimization Strategy Results](images/if_optimize.png)
+![Optimization Strategy Results](images/if_optimize.png)
 
 ---
 
@@ -116,6 +116,16 @@ uv run mlflow ui
 
 Then open `http://127.0.0.1:5000` in your browser.
 
+### 4. Testing & Validation
+
+To ensure the integrity of the pipeline and verify that all components (DataProcessor, TextPreprocessor, etc.) function as expected, we have included a comprehensive test suite.
+
+Run the automated test suite using:
+
+```bash
+uv run python scripts/run_tests.py
+```
+
 ---
 
 ## ⚙️ Pipeline Configuration
@@ -142,12 +152,13 @@ The pipeline is highly configurable via command-line arguments, allowing you to 
 | `--optimize` | `False` | `True` / `False`                                                    | If set, enables `GridSearchCV` to find the best hyperparameters. **Note:** Increases runtime significantly. |
 
 ### NLP & Preprocessing
-| Argument | Default | Description |
-| :--- | :--- | :--- |
-| `--vectorizer_type` | `None` | Method to convert text to feature vectors. Options: `'count'` (Bag of Words) or `'tfidf'`. |
-| `--stop_words` | `None` | Specific list of stop words to remove during tokenization. |
-| `--lowercase` | `False` | Flag to convert all text to lowercase before vectorization. |
-| `--remove_punctuation`| `False` | Flag to strip all punctuation marks. |
+| Argument | Default | Description                                                                               |
+| :--- |:--------|:------------------------------------------------------------------------------------------|
+| `--vectorizer_type` | `None`  | Method to convert text to tokens. Options: `'count'` (Bag of Words) or `'tfidf'`.         |
+| `--vocabulary_size` | `5000`  | Maximum number of tokens to learn (will keep the N most present).                         |
+| `--stop_words` | `None`  | Specific list of stop words to remove during tokenization.                                |
+| `--lowercase` | `False` | Flag to convert all text to lowercase before vectorization.                               |
+| `--remove_punctuation`| `False` | Flag to strip all punctuation marks.                                                      |
 | `--number_placeholder`| `False` | Flag to replace all digits with a generic `<NUM>` token to generalize numerical patterns. |
 
 ### Example Configurations
@@ -166,6 +177,7 @@ uv run python scripts/run_pipeline.py --model Logistic_Regression --train_datase
 ├── scripts/                   # Execution entry points
 │   ├── run_automatic_pipeline.py
 │   ├── run_grid_search_pipeline.py
+│   ├── run_tests.py
 │   └── run_pipeline.py
 ├── src/
 │   ├── pipeline/              # Core Logic

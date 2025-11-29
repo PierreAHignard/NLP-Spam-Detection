@@ -114,7 +114,8 @@ def run_pipeline(args):
             lowercase=args.lowercase,
             remove_punctuation=args.remove_punctuation,
             number_placeholder=args.number_placeholder,
-            vectorizer_type=args.vectorizer_type
+            vectorizer_type=args.vectorizer_type,
+            max_features=args.vocabulary_size
         )
         trainer = ModelTrainer()
 
