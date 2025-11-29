@@ -39,13 +39,39 @@ def run_pipeline(args):
     start_time = time.time()
     logger = get_logger()
 
-    # Add MLflow setup and run start (Workshop 4)
-        # Configuration MLflow simple
-    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
-    mlflow.set_experiment(MLFLOW_EXPERIMENT_NAME)
+    warnings.filterwarnings("ignore", category=ConvergenceWarning, module="sklearn")
 
-        # Create descriptive run name
-    mlflow.start_run(run_name="run")
+    #Reduce the amount of noise shown by mlflow
+    warnings.filterwarnings("ignore", category=FutureWarning, module="mlflow")
+    warnings.filterwarnings("ignore", category=UserWarning, module="mlflow")
+
+    # Creating Eperiment name (easier to separate this way)
+    experiment_name = "Spam Detection"
+    for data in args.train_datasets:
+        experiment_name += f"_{data}"
+
+    experiment_name += "_to"
+
+    for data in args.test_datasets:
+        experiment_name += f"_{data}"
+
+    # Configuration MLflow simple
+    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+    mlflow.set_experiment(experiment_name)
+
+    # Create descriptive run name
+    if args.run_name == '':
+        run_name = f"spam_{args.model}"
+
+        if args.optimize:
+            run_name += "_opti"
+
+    else:
+       run_name = args.run_name
+
+    timestamp = datetime.datetime.now().strftime("%Hh%M")
+
+    mlflow.start_run(run_name=f"{run_name}_{timestamp}")
 
         # Set tags for Dataset and Model columns in MLflow UI
     # PARAMS
