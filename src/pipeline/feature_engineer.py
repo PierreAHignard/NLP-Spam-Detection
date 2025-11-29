@@ -23,11 +23,64 @@ class FeatureEngineer:
     Handles temporal feature extraction, geographic feature creation,
     categorical encoding, and feature selection.
     """
-    
-    def __init__(self, stop_words=None):
-        """Initialize the feature engineer."""
-        self.count_vectorizer = None
+
+    def __init__(
+            self,
+            stop_words: str | None = None,
+            number_placeholder: bool = False,
+            lowercase: bool = False,
+            remove_punctuation: bool = False,
+            vectorizer_type: str = 'count'
+        ):
+        """
+        Initialize the feature engineer.
+
+        Args:
+            vectorizer_type (str): 'count' for CountVectorizer or 'tfidf' for TfidfVectorizer
+        """
+
+        self.vectorizer = None  # Renamed from count_vectorizer to be generic
+        self.vectorizer_type = vectorizer_type # Store the type
         self.stop_words = stop_words
+        self.number_placeholder = number_placeholder
+        self.lowercase = lowercase
+        self.remove_punctuation = remove_punctuation
+
+        self._stop_words_list = None
+
+        if self.stop_words == "nltk":
+            nltk.download('stopwords')
+            self._stop_words_list = list(stopwords.words('english'))
+
+            # Sklearn tells me I should add these too
+            self._stop_words_list += ['arent', 'couldnt', 'didnt', 'doesnt', 'dont', 'hadnt', 'hasnt', 'havent', 'hed', 'hell', 'hes', 'id', 'ill', 'im', 'isnt', 'itd', 'itll', 'ive', 'mightnt', 'mustnt', 'neednt', 'shant', 'shed', 'shell', 'shes', 'shouldnt', 'shouldve', 'thatll', 'theyd', 'theyll', 'theyre', 'theyve', 'wasnt', 'wed', 'well', 'werent', 'weve', 'wont', 'wouldnt', 'youd', 'youll', 'youre', 'youve']
+
+        if self.remove_punctuation:
+            # Create pattern (which keeps the <NUM> placeholder)
+            punctuations = string.punctuation.replace('<', '').replace('>', '')
+            self._remove_punctuation_pattern = r'[' + re.escape(punctuations) + r']'
+
+    def preprocess(self, txt: str):
+        """
+        Replace all numbers in text with <NUM> token.
+
+        Args:
+            txt (str): Input text containing numbers
+
+        Returns:
+            str: Text with numbers replaced by <NUM>
+        """
+
+        if self.lowercase:
+            txt = txt.lower()
+
+        if self.number_placeholder:
+            txt = re.sub(r'\d+', '<NUM>', txt)
+
+        if self.remove_punctuation:
+            txt = re.sub(self._remove_punctuation_pattern, '', txt)
+
+        return txt
 
     def tokeniser(self, train_msg, test_msg):
         logger = get_logger()
