@@ -93,17 +93,17 @@ class DataProcessor:
         logger.substep("Loading Data")
         
         # Load training and test data using DATA_PATH and file names defined in config
-        self.sms_data = pd.read_csv(DATA_PATH / SMS_FILE)
-        self.email_data = pd.read_csv(DATA_PATH / EMAIL_FILE)
-        
+        self.sms_data = pd.read_csv(DATA_PATH / SMS_FILE, sep=";")
+        self.email_data = pd.read_csv(DATA_PATH / EMAIL_FILE, sep=",")
+
+        # Typing so that mlflow won't warn about NaN not working with int64 (but Int64 does)
+        self.sms_data[LABEL_COL] = self.sms_data[LABEL_COL].astype('Int64')
+        self.email_data[LABEL_COL] = self.email_data[LABEL_COL].astype('Int64')
+
         # Logging
         with logger.indent():
             logger.dataframe_info(self.sms_data, "SMS data")
             logger.dataframe_info(self.email_data, "Email data")
-
-        if mlflow.active_run():
-            mlflow.log_input(from_pandas(self.sms_data, "SMS Data"), "Training")
-            mlflow.log_input(from_pandas(self.email_data, "Email Data"), "Training")
 
         logger.success("Data loading completed")
         return self.sms_data.copy(), self.email_data.copy()
@@ -175,6 +175,26 @@ class DataProcessor:
         # Step 3: Balance the label proportions in train dataset
         if balance:
             train_data = balance_data(train_data)
+
+        # Log data before splitting between message and label
+        if mlflow.active_run():
+            mlflow.log_input(
+                from_pandas(train_data, DATA_PATH, targets=LABEL_COL),
+                "Training",
+                tags={
+                    "contains.sms": str("SMS" in self.train_selection),
+                    "contains.email": str("EMAIL" in self.train_selection)
+                }
+            )
+
+            mlflow.log_input(
+                from_pandas(test_data, DATA_PATH, targets=LABEL_COL),
+                "Testing",
+                tags={
+                    "contains.sms": str("SMS" in self.test_selection),
+                    "contains.email": str("EMAIL" in self.test_selection)
+                }
+            )
 
         # Step 4: Separate between message and label
         train_msg = train_data[MESSAGE_COL]
