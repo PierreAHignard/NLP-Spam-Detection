@@ -192,9 +192,9 @@ uv run python scripts/run_pipeline.py --model Logistic_Regression --train_datase
 ---
 
 **Authors:** 
-- **Pierre-Antoine HIGNARD**, for everything
-- **Samuel VATON**, for nothing
-- **François-Xavier COLLOT**, for nothing
+- **Pierre-Antoine HIGNARD**
+- **Samuel VATON**
+- **François-Xavier COLLOT**
 
 
 **Course:** UE Data Science Toolkits - NPL Spam Detection project
